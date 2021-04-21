@@ -19,15 +19,13 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
-// g_combat.c
 
 #include "g_local.h"
 
 /*
-#######################
+============
 BerserkerCheck
-#######################
+============
 */
 void BerserkerCheck(gentity_t *ent) {
 	if (!ent->client)
@@ -150,16 +148,16 @@ void TossClientItems(gentity_t *self) {
 
 		if (self->client->sess.sessionTeam == TEAM_RED) {
 			for (; self->client->ps.ammo[WP_SPRAYPISTOL] > 0; self->client->ps.ammo[WP_SPRAYPISTOL]--)
-				Drop_Item(self, BG_FindItem("red Cartridge"), random() * 360); // pickup name ändern !!!
+				Drop_Item(self, BG_FindItem("red Cartridge"), random() * 360); // change pickup name!!!
 
 			Drop_Item(self, BG_FindItem("blue Cartridge"), random() * 360)->nextthink =
-				level.time + 120000; // pickup name ändern !!!
+				level.time + 120000; // change pickup name!!!
 		} else if (self->client->sess.sessionTeam == TEAM_BLUE) {
 			for (; self->client->ps.ammo[WP_SPRAYPISTOL] > 0; self->client->ps.ammo[WP_SPRAYPISTOL]--)
-				Drop_Item(self, BG_FindItem("blue Cartridge"), random() * 360); // pickup name ändern !!!
+				Drop_Item(self, BG_FindItem("blue Cartridge"), random() * 360); // change pickup name!!!
 
 			Drop_Item(self, BG_FindItem("red Cartridge"), random() * 360)->nextthink =
-				level.time + 120000; // pickup name ändern !!!
+				level.time + 120000; // change pickup name!!!
 		}
 		// other->client->ps.generic1=other->client->ps.ammo[WP_SPRAYPISTOL];
 		self->client->ps.generic1 = 0;
@@ -175,7 +173,7 @@ void TossClientItems(gentity_t *self) {
 		self->client->ps.ammo[WP_SPRAYPISTOL]++; // add the own cartridge ...
 
 		for (; self->client->ps.ammo[WP_SPRAYPISTOL] > 0; self->client->ps.ammo[WP_SPRAYPISTOL]--) {
-			tmpGE = Drop_Item(self, BG_FindItem("neutral Cartridge"), random() * 360); // pickup name ändern !!!
+			tmpGE = Drop_Item(self, BG_FindItem("neutral Cartridge"), random() * 360); // change pickup name!!!
 
 			tmpGE->nextthink = level.time + 120000;
 			if (first) {
@@ -187,7 +185,6 @@ void TossClientItems(gentity_t *self) {
 	}
 
 	// drop all the powerups if not in teamplay
-	// if ( g_gametype.integer >= GT_TEAM ) {
 	angle = 45;
 	for (i = 1; i < PW_NUM_POWERUPS; i++) {
 		if (i == PW_BERSERKER)
@@ -218,7 +215,6 @@ void TossClientItems(gentity_t *self) {
 			angle += 45;
 		}
 	}
-	//}
 }
 
 /*
@@ -243,24 +239,6 @@ void LookAtKiller(gentity_t *self, gentity_t *inflictor, gentity_t *attacker) {
 
 /*
 ==================
-GibEntity
-==================
-*/
-void GibEntity(gentity_t *self, int killer) {
-	return; // we don't want any gib-stuff
-			/*
-				gentity_t *ent;
-				int i;
-
-				G_AddEvent( self, EV_GIB_PLAYER, killer );
-				self->takedamage = qfalse;
-				self->s.eType = ET_INVISIBLE;
-				self->r.contents = 0;
-			*/
-}
-
-/*
-==================
 body_die
 ==================
 */
@@ -268,17 +246,12 @@ void body_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int da
 	if (self->health > GIB_HEALTH) {
 		return;
 	}
-	// if ( !g_blood.integer ) {
 	self->health = GIB_HEALTH + 1;
-	return;
-	//}
-
-	// GibEntity( self, 0 );
 }
 
 // these are just for logging, the client prints its own messages
 // keep in sync with meansOfDeath_t !!!
-char *modNames[] = {
+static const char *modNames[] = {
 	"MOD_UNKNOWN",		   "MOD_PUMPER",  "MOD_PUNCHY",		  "MOD_NIPPER",			 "MOD_BALLOONY",
 	"MOD_BALLOONY_SPLASH", "MOD_BETTY",	  "MOD_BETTY_SPLASH", "MOD_BUBBLEG",		 "MOD_BUBBLEG_SPLASH",
 	"MOD_SPLASHER",		   "MOD_BOASTER", "MOD_IMPERIUS",	  "MOD_IMPERIUS_SPLASH", "MOD_INJECTOR",
@@ -295,7 +268,7 @@ char *modNames[] = {
 CheckAlmostCapture
 ==================
 */
-void CheckAlmostCapture(gentity_t *self, gentity_t *attacker) {
+static void CheckAlmostCapture(gentity_t *self, gentity_t *attacker) {
 	gentity_t *ent;
 	vec3_t dir;
 	char *classname;
@@ -331,7 +304,7 @@ void CheckAlmostCapture(gentity_t *self, gentity_t *attacker) {
 CheckAlmostScored
 ==================
 */
-void CheckAlmostScored(gentity_t *self, gentity_t *attacker) {
+static void CheckAlmostScored(gentity_t *self, gentity_t *attacker) {
 	gentity_t *ent;
 	vec3_t dir;
 	char *classname;
@@ -369,7 +342,7 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 	int contents;
 	int killer;
 	int i;
-	char *obit;
+	const char *obit;
 
 	if (self->client->ps.pm_type == PM_DEAD) {
 		return;
@@ -456,7 +429,6 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 			}
 
 			if (meansOfDeath == MOD_PUNCHY) {
-
 				// play humiliation on player
 				if (!attacker->client->ps.powerups[PW_BERSERKER]) {
 					attacker->client->ps.persistant[PERS_GAUNTLET_FRAG_COUNT]++;
@@ -599,7 +571,7 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 CheckArmor
 ================
 */
-int CheckArmor(gentity_t *ent, int damage, int dflags) {
+static int CheckArmor(gentity_t *ent, int damage, int dflags) {
 	gclient_t *client;
 	int save;
 	int count;
@@ -627,40 +599,6 @@ int CheckArmor(gentity_t *ent, int damage, int dflags) {
 	client->ps.stats[STAT_ARMOR] -= save;
 
 	return save;
-}
-
-/*
-================
-RaySphereIntersections
-================
-*/
-int RaySphereIntersections(vec3_t origin, float radius, vec3_t point, vec3_t dir, vec3_t intersections[2]) {
-	float b, c, d, t;
-
-	//	| origin - (point + t * dir) | = radius
-	//	a = dir[0]^2 + dir[1]^2 + dir[2]^2;
-	//	b = 2 * (dir[0] * (point[0] - origin[0]) + dir[1] * (point[1] - origin[1]) + dir[2] * (point[2] - origin[2]));
-	//	c = (point[0] - origin[0])^2 + (point[1] - origin[1])^2 + (point[2] - origin[2])^2 - radius^2;
-
-	// normalize dir so a = 1
-	VectorNormalize(dir);
-	b = 2 * (dir[0] * (point[0] - origin[0]) + dir[1] * (point[1] - origin[1]) + dir[2] * (point[2] - origin[2]));
-	c = (point[0] - origin[0]) * (point[0] - origin[0]) + (point[1] - origin[1]) * (point[1] - origin[1]) +
-		(point[2] - origin[2]) * (point[2] - origin[2]) - radius * radius;
-
-	d = b * b - 4 * c;
-	if (d > 0) {
-		t = (-b + sqrt(d)) / 2;
-		VectorMA(point, t, dir, intersections[0]);
-		t = (-b - sqrt(d)) / 2;
-		VectorMA(point, t, dir, intersections[1]);
-		return 2;
-	} else if (d == 0) {
-		t = (-b) / 2;
-		VectorMA(point, t, dir, intersections[0]);
-		return 1;
-	}
-	return 0;
 }
 
 /*
@@ -820,7 +758,6 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 
 	// check for completely getting out of the damage
 	if (!(dflags & DAMAGE_NO_PROTECTION)) {
-
 		// if TF_NO_FRIENDLY_FIRE is set, don't do damage to the target
 		// if the attacker was on the same team
 		// NOTE: With Boomies we can have targ==attacker, should be considered friendlyfire instead of selfdamage
@@ -861,7 +798,7 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 	// always give half damage if hurting self
 	// calculated after knockback, so rocket jumping works
 	if (targ == attacker) {
-		damage *= 0.5f;
+		damage *= 0.5;
 	}
 
 	if (damage < 1) {
@@ -1047,7 +984,7 @@ qboolean G_RadiusDamage(vec3_t origin, gentity_t *attacker, float damage, float 
 			continue;
 		}
 
-		points = damage * (1.0 - dist / radius);
+		points = damage * (1.0f - dist / radius);
 
 		if (CanDamage(ent, origin)) {
 			if (LogAccuracyHit(ent, attacker)) {

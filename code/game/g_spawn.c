@@ -397,53 +397,54 @@ typedef struct {
 	const char *r; // replace
 } replacePair_t;
 
-replacePair_t q3ToWopItems[] = {{"weapon_gauntlet", "weapon_punchy"},
-								{"weapon_machinegun", "weapon_nipper"},
-								{"weapon_shotgun", "weapon_pumper"},
-								{"weapon_lightning", "weapon_boaster"},
-								{"weapon_railgun", "weapon_splasher"},
-								{"weapon_plasmagun", "weapon_bubbleg"},
-								{"weapon_grenadelauncher", "weapon_balloony"},
-								{"weapon_rocketlauncher", "weapon_betty"},
-								{"weapon_bfg", "weapon_imperius"},
+static const replacePair_t q3ToWopItems[] = {{"weapon_gauntlet", "weapon_punchy"},
+											 {"weapon_machinegun", "weapon_nipper"},
+											 {"weapon_shotgun", "weapon_pumper"},
+											 {"weapon_lightning", "weapon_boaster"},
+											 {"weapon_railgun", "weapon_splasher"},
+											 {"weapon_plasmagun", "weapon_bubbleg"},
+											 {"weapon_grenadelauncher", "weapon_balloony"},
+											 {"weapon_rocketlauncher", "weapon_betty"},
+											 {"weapon_bfg", "weapon_imperius"},
 
-								{"ammo_shells", "ammo_pumper"},
-								{"ammo_bullets", "ammo_nipper"},
-								{"ammo_grenades", "ammo_balloony"},
-								{"ammo_cells", "ammo_bubbleg"},
-								{"ammo_lightning", "ammo_boaster"},
-								{"ammo_rockets", "ammo_betty"},
-								{"ammo_slugs", "ammo_splasher"},
-								{"ammo_bfg", "ammo_imperius"},
+											 {"ammo_shells", "ammo_pumper"},
+											 {"ammo_bullets", "ammo_nipper"},
+											 {"ammo_grenades", "ammo_balloony"},
+											 {"ammo_cells", "ammo_bubbleg"},
+											 {"ammo_lightning", "ammo_boaster"},
+											 {"ammo_rockets", "ammo_betty"},
+											 {"ammo_slugs", "ammo_splasher"},
+											 {"ammo_bfg", "ammo_imperius"},
 
-								{"item_quad", "item_padpower"},
-								{"item_enviro", "item_climber"},
-								{"item_hast", "item_speedy"},
-								{"item_flight", "item_jump"},
-								{"item_invis", "item_visionless"},
-								{"item_regen", "item_revival"},
-								{"item_armor_body", "item_armor_padshield"},
+											 {"item_quad", "item_padpower"},
+											 {"item_enviro", "item_climber"},
+											 {"item_hast", "item_speedy"},
+											 {"item_flight", "item_jump"},
+											 {"item_invis", "item_visionless"},
+											 {"item_regen", "item_revival"},
+											 {"item_armor_body", "item_armor_padshield"},
 
-								{"team_CTF_redflag", "team_CTL_redlolly"},
-								{"team_CTF_blueflag", "team_CTL_bluelolly"},
-								{"team_CTF_redplayer", "team_redplayer"},
-								{"team_CTF_blueplayer", "team_blueplayer"},
-								{"team_CTF_redspawn", "team_redspawn"},
-								{"team_CTF_bluespawn", "team_bluespawn"},
-								{NULL, NULL}};
+											 {"team_CTF_redflag", "team_CTL_redlolly"},
+											 {"team_CTF_blueflag", "team_CTL_bluelolly"},
+											 {"team_CTF_redplayer", "team_redplayer"},
+											 {"team_CTF_blueplayer", "team_blueplayer"},
+											 {"team_CTF_redspawn", "team_redspawn"},
+											 {"team_CTF_bluespawn", "team_bluespawn"},
+											 {NULL, NULL}};
 
-replacePair_t shortMarkernames[] = {{"black", "models/mapobjects/pad_weaponmarker/pad_wepm_black_bg.md3"},
-									{"blue", "models/mapobjects/pad_weaponmarker/pad_wepm_blue_bg.md3"},
-									{"green", "models/mapobjects/pad_weaponmarker/pad_wepm_green_gg.md3"},
-									{"purple", "models/mapobjects/pad_weaponmarker/pad_wepm_green_bg.md3"},
-									{"orange", "models/mapobjects/pad_weaponmarker/pad_wepm_orange_bg.md3"},
-									{NULL, NULL}};
+static const replacePair_t shortMarkernames[] = {
+	{"black", "models/mapobjects/pad_weaponmarker/pad_wepm_black_bg"},
+	{"blue", "models/mapobjects/pad_weaponmarker/pad_wepm_blue_bg"},
+	{"green", "models/mapobjects/pad_weaponmarker/pad_wepm_green_gg"},
+	{"purple", "models/mapobjects/pad_weaponmarker/pad_wepm_green_bg"},
+	{"orange", "models/mapobjects/pad_weaponmarker/pad_wepm_orange_bg"},
+	{NULL, NULL}};
 
-replacePair_t spawnpointReplacements[] = {{"team_redplayer", "info_player_deathmatch"},
-										  {"team_blueplayer", "info_player_deathmatch"},
-										  {"team_redspawn", "info_player_deathmatch"},
-										  {"team_bluespawn", "info_player_deathmatch"},
-										  {NULL, NULL}};
+static const replacePair_t spawnpointReplacements[] = {{"team_redplayer", "info_player_deathmatch"},
+													   {"team_blueplayer", "info_player_deathmatch"},
+													   {"team_redspawn", "info_player_deathmatch"},
+													   {"team_bluespawn", "info_player_deathmatch"},
+													   {NULL, NULL}};
 
 /*
 ===================
