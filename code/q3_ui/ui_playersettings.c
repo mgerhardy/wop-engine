@@ -571,11 +571,7 @@ static void PlayerSettings_BuildList(void) {
 			trap_R_RegisterShaderNoMip(va("models/wop_players/%s/wop_menuB", dirptr));
 
 		// iterate all skin files in directory
-		numfiles = 0;
-		numfiles += trap_FS_GetFileList(va("models/wop_players/%s", dirptr), "tga", filelist, MAX_MODELFOLDER_FILELIST);
-		tgaLength = strlen(filelist);
-		numfiles += trap_FS_GetFileList(va("models/wop_players/%s", dirptr), "png", filelist + strlen(filelist),
-										MAX_MODELFOLDER_FILELIST - tgaLength);
+		numfiles = trap_FS_GetFileList(va("models/wop_players/%s", dirptr), "tga;png", filelist, MAX_MODELFOLDER_FILELIST);
 		fileptr = filelist;
 		for (j = 0; j < numfiles && ps_playericons.lastskinicon[ps_playericons.nummodel] < MAX_SKINS;
 			 j++, fileptr += filelen + 1) {
