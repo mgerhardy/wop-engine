@@ -769,6 +769,7 @@ char *COM_SkipPath(char *pathname);
 const char *COM_GetExtension(const char *name);
 void COM_StripExtension(const char *in, char *out, int destsize);
 qboolean COM_CompareExtension(const char *in, const char *ext);
+qboolean COM_CompareExtensionImage(const char *in);
 void COM_DefaultExtension(char *path, int maxSize, const char *extension);
 
 void COM_BeginParseSession(const char *name);
@@ -839,6 +840,7 @@ int Q_stricmpn(const char *s1, const char *s2, int n);
 char *Q_strlwr(char *s1);
 char *Q_strupr(char *s1);
 const char *Q_stristr(const char *s, const char *find);
+qboolean Q_stricontains(const char *s, const char *find);
 
 // buffer size safe library replacements
 void Q_strncpyz(char *dest, const char *src, int destsize);

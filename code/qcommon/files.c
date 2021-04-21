@@ -2114,7 +2114,7 @@ Returns a uniqued list of files that match the given criteria
 from all search paths
 ===============
 */
-char **FS_ListFilteredFiles(const char *path, const char *extension, char *filter, int *numfiles,
+char **FS_ListFilteredFiles(const char *path, const char *extensions, char *filter, int *numfiles,
 							qboolean allowNonPureFilesOnDisk) {
 	int nfiles;
 	char **listCopy;
@@ -2127,6 +2127,8 @@ char **FS_ListFilteredFiles(const char *path, const char *extension, char *filte
 	pack_t *pak;
 	fileInPack_t *buildBuffer;
 	char zpath[MAX_ZPATH];
+	const char *extension;
+	char extensionBuf[128];
 
 	if (!fs_searchpaths) {
 		Com_Error(ERR_FATAL, "Filesystem call made without initialization");
@@ -2136,95 +2138,106 @@ char **FS_ListFilteredFiles(const char *path, const char *extension, char *filte
 		*numfiles = 0;
 		return NULL;
 	}
-	if (!extension) {
-		extension = "";
+	if (!extensions) {
+		extensions = "";
 	}
 
 	pathLength = strlen(path);
 	if (path[pathLength - 1] == '\\' || path[pathLength - 1] == '/') {
 		pathLength--;
 	}
-	extensionLength = strlen(extension);
-	nfiles = 0;
-	FS_ReturnPath(path, zpath, &pathDepth);
 
-	//
-	// search through the path, one element at a time, adding to list
-	//
-	for (search = fs_searchpaths; search; search = search->next) {
-		// is the element a pak file?
-		if (search->pack) {
+	Q_strncpyz(extensionBuf, extensions, sizeof(extensionBuf));
+	char *ext = extensionBuf;
+	for (;;) {
+		extension = ext;
+		char *next = Q_stristr(ext, ";");
+		if (next != NULL) {
+			*next = '\0';
+			ext = next + 1;
+		}
 
-			// ZOID:  If we are pure, don't search for files on paks that
-			// aren't on the pure list
-			if (!FS_PakIsPure(search->pack)) {
-				continue;
-			}
+		extensionLength = strlen(extension);
+		nfiles = 0;
+		FS_ReturnPath(path, zpath, &pathDepth);
 
-			// look through all the pak file elements
-			pak = search->pack;
-			buildBuffer = pak->buildBuffer;
-			for (i = 0; i < pak->numfiles; i++) {
+		//
+		// search through the path, one element at a time, adding to list
+		//
+		for (search = fs_searchpaths; search; search = search->next) {
+			// is the element a pak file?
+			if (search->pack) {
+
+				// ZOID:  If we are pure, don't search for files on paks that
+				// aren't on the pure list
+				if (!FS_PakIsPure(search->pack)) {
+					continue;
+				}
+
+				// look through all the pak file elements
+				pak = search->pack;
+				buildBuffer = pak->buildBuffer;
+				for (i = 0; i < pak->numfiles; i++) {
+					char *name;
+					int zpathLen, depth;
+
+					// check for directory match
+					name = buildBuffer[i].name;
+					//
+					if (filter) {
+						// case insensitive
+						if (!Com_FilterPath(filter, name, qfalse))
+							continue;
+						// unique the match
+						nfiles = FS_AddFileToList(name, list, nfiles);
+					} else {
+
+						zpathLen = FS_ReturnPath(name, zpath, &depth);
+
+						if ((depth - pathDepth) > 2 || pathLength > zpathLen || Q_stricmpn(name, path, pathLength)) {
+							continue;
+						}
+
+						// check for extension match
+						length = strlen(name);
+						if (length < extensionLength) {
+							continue;
+						}
+
+						if (Q_stricmp(name + length - extensionLength, extension)) {
+							continue;
+						}
+						// unique the match
+
+						temp = pathLength;
+						if (pathLength) {
+							temp++; // include the '/'
+						}
+						nfiles = FS_AddFileToList(name + temp, list, nfiles);
+					}
+				}
+			} else if (search->dir) { // scan for files in the filesystem
+				char *netpath;
+				int numSysFiles;
+				char **sysFiles;
 				char *name;
-				int zpathLen, depth;
 
-				// check for directory match
-				name = buildBuffer[i].name;
-				//
-				if (filter) {
-					// case insensitive
-					if (!Com_FilterPath(filter, name, qfalse))
-						continue;
-					// unique the match
-					nfiles = FS_AddFileToList(name, list, nfiles);
+				// don't scan directories for files if we are pure or restricted
+				if (fs_numServerPaks && !allowNonPureFilesOnDisk) {
+					continue;
 				} else {
-
-					zpathLen = FS_ReturnPath(name, zpath, &depth);
-
-					if ((depth - pathDepth) > 2 || pathLength > zpathLen || Q_stricmpn(name, path, pathLength)) {
-						continue;
+					netpath = FS_BuildOSPath(search->dir->path, search->dir->gamedir, path);
+					sysFiles = Sys_ListFiles(netpath, extension, filter, &numSysFiles, qfalse);
+					for (i = 0; i < numSysFiles; i++) {
+						// unique the match
+						name = sysFiles[i];
+						nfiles = FS_AddFileToList(name, list, nfiles);
 					}
-
-					// check for extension match
-					length = strlen(name);
-					if (length < extensionLength) {
-						continue;
-					}
-
-					if (Q_stricmp(name + length - extensionLength, extension)) {
-						continue;
-					}
-					// unique the match
-
-					temp = pathLength;
-					if (pathLength) {
-						temp++; // include the '/'
-					}
-					nfiles = FS_AddFileToList(name + temp, list, nfiles);
+					Sys_FreeFileList(sysFiles);
 				}
-			}
-		} else if (search->dir) { // scan for files in the filesystem
-			char *netpath;
-			int numSysFiles;
-			char **sysFiles;
-			char *name;
-
-			// don't scan directories for files if we are pure or restricted
-			if (fs_numServerPaks && !allowNonPureFilesOnDisk) {
-				continue;
-			} else {
-				netpath = FS_BuildOSPath(search->dir->path, search->dir->gamedir, path);
-				sysFiles = Sys_ListFiles(netpath, extension, filter, &numSysFiles, qfalse);
-				for (i = 0; i < numSysFiles; i++) {
-					// unique the match
-					name = sysFiles[i];
-					nfiles = FS_AddFileToList(name, list, nfiles);
-				}
-				Sys_FreeFileList(sysFiles);
 			}
 		}
 	}
-
 	// return a copy of the list
 	*numfiles = nfiles;
 

@@ -127,6 +127,11 @@ qboolean COM_CompareExtension(const char *in, const char *ext) {
 	return qfalse;
 }
 
+qboolean COM_CompareExtensionImage(const char *in) {
+	return COM_CompareExtension(in, ".tga") || COM_CompareExtension(in, ".png") || COM_CompareExtension(in, ".jpg") ||
+		   COM_CompareExtension(in, ".jpeg") || COM_CompareExtension(in, ".pcx") || COM_CompareExtension(in, ".bmp");
+}
+
 /*
 ==================
 COM_DefaultExtension
@@ -885,6 +890,29 @@ const char *Q_stristr(const char *s, const char *find) {
 		s--;
 	}
 	return s;
+}
+
+qboolean Q_stricontains(const char *s, const char *find) {
+	char c, sc;
+	size_t len;
+
+	if ((c = *find++) != 0) {
+		if (c >= 'a' && c <= 'z') {
+			c -= ('a' - 'A');
+		}
+		len = strlen(find);
+		do {
+			do {
+				if ((sc = *s++) == 0)
+					return qfalse;
+				if (sc >= 'a' && sc <= 'z') {
+					sc -= ('a' - 'A');
+				}
+			} while (sc != c);
+		} while (Q_stricmpn(s, find, len) != 0);
+		s--;
+	}
+	return qtrue;
 }
 
 int Q_PrintStrlen(const char *string) {
