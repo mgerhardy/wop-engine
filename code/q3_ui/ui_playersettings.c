@@ -430,15 +430,15 @@ static void PlayerSettings_SetMenuItems(void) {
 }
 
 static int GetSpecialSkinScore(const char *iconPath) {
-	if (NULL != Q_stristr(iconPath, "/default"))
+	if (Q_stricontains(iconPath, "/default"))
 		return 3;
-	else if (NULL != Q_stristr(iconPath, "/blue"))
+	else if (Q_stricontains(iconPath, "/blue"))
 		return 2;
-	else if (NULL != Q_stristr(iconPath, "/red"))
+	else if (Q_stricontains(iconPath, "/red"))
 		return 1;
-	else
-		return 0;
+	return 0;
 }
+
 static int SkinComp(const void *vA, const void *vB) {
 	const SkinData_t *a = (const SkinData_t *)vA;
 	const SkinData_t *b = (const SkinData_t *)vB;
