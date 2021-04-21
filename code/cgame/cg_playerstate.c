@@ -291,7 +291,7 @@ CG_CheckLocalSounds
 ==================
 */
 void CG_CheckLocalSounds(playerState_t *ps, playerState_t *ops) {
-	int highScore, health, armor;
+	int highScore;
 	qboolean reward = qfalse;
 	sfxHandle_t sfx;
 
@@ -302,8 +302,6 @@ void CG_CheckLocalSounds(playerState_t *ps, playerState_t *ops) {
 
 	// hit changes
 	if (ps->persistant[PERS_HITS] > ops->persistant[PERS_HITS]) {
-		armor = ps->persistant[PERS_ATTACKEE_ARMOR] & 0xff;
-		health = ps->persistant[PERS_ATTACKEE_ARMOR] >> 8;
 		trap_S_StartLocalSound(cgs.media.hitSound, CHAN_LOCAL_SOUND);
 	} else if (ps->persistant[PERS_HITS] < ops->persistant[PERS_HITS]) {
 		trap_S_StartLocalSound(cgs.media.hitTeamSound, CHAN_LOCAL_SOUND);
