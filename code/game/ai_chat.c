@@ -253,46 +253,6 @@ static const char *BotMapTitle(void) {
 
 /*
 ==================
-BotWeaponNameForMeansOfDeath
-==================
-*/
-static const char *BotWeaponNameForMeansOfDeath(int mod) {
-	switch (mod) {
-	case MOD_PUMPER:
-		return "Shotgun";
-	case MOD_PUNCHY:
-		return "Gauntlet";
-	case MOD_NIPPER:
-		return "Machinegun";
-	case MOD_BALLOONY:
-	case MOD_BALLOONY_SPLASH:
-		return "Grenade Launcher";
-	case MOD_BETTY:
-	case MOD_BETTY_SPLASH:
-		return "Rocket Launcher";
-	case MOD_BUBBLEG:
-	case MOD_BUBBLEG_SPLASH:
-		return "Plasmagun";
-	case MOD_SPLASHER:
-		return "Railgun";
-	case MOD_BOASTER:
-		return "Lightning Gun";
-	case MOD_IMPERIUS:
-	case MOD_IMPERIUS_SPLASH:
-		return "BFG10K";
-
-	case MOD_KILLERDUCKS:
-		return "KiLLERDUCKS";
-
-	case MOD_GRAPPLE:
-		return "Grapple";
-	default:
-		return "[unknown weapon]";
-	}
-}
-
-/*
-==================
 BotRandomWeaponName
 ==================
 */
