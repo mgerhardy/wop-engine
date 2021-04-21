@@ -804,6 +804,7 @@ void UI_SearchSpraylogos(void) {
 	int numFiles;
 	int nameLen;
 	char cvarBuff[1024];
+	char baseName[128];
 
 	numFiles = trap_FS_GetFileList("spraylogos", NULL, fileList, sizeof(fileList));
 
@@ -812,21 +813,13 @@ void UI_SearchSpraylogos(void) {
 	cvarBuff[0] = '\0';
 	namePtr = fileList;
 	for (i = 0; i < numFiles; i++, namePtr += (nameLen + 1)) {
-		char *ext = strchr(namePtr, '.');
-
-		nameLen = strlen(namePtr);
-
-		// ignore anything but jpg and tga
-		if (!nameLen || !ext ||
-			(Q_stricmp(".jpg", Q_strlwr(ext)) != 0 && Q_stricmp(".tga", Q_strlwr(ext)) != 0 &&
-			 Q_stricmp(".png", Q_strlwr(ext)) != 0))
+		if (!COM_CompareExtensionImage(namePtr)) {
 			continue;
+		}
+		COM_StripExtension(namePtr, baseName, sizeof(baseName));
+		Com_Printf("%s ", baseName);
 
-		*ext = '\0';
-
-		Com_Printf("%s ", namePtr);
-
-		Q_strcat(cvarBuff, sizeof(cvarBuff), va("%s\\", namePtr));
+		Q_strcat(cvarBuff, sizeof(cvarBuff), va("%s\\", baseName));
 
 		UI_LoadLogoForMenu(namePtr);
 	}
