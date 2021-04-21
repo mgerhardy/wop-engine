@@ -427,7 +427,7 @@ int BotGetItemLongTermGoal(bot_state_t *bs, int tfl, bot_goal_t *goal) {
 
 			bs->ltg_time = FloatTime() + 20; // FIXME: I think giving up the goal after 20secs are a bit short ... or?
 		} else { // the bot gets sorta stuck with all the avoid timings, shouldn't happen though
-			//
+				 //
 #ifdef DEBUG
 			char netname[128];
 
@@ -1561,7 +1561,7 @@ int AINode_Respawn(bot_state_t *bs) {
 		bs->respawn_wait = qtrue;
 		// elementary action respawn
 		trap_EA_Respawn(bs->client);
-		//
+
 		if (bs->respawnchat_time) {
 			trap_BotEnterChat(bs->cs, 0, bs->chatto);
 			bs->enemy = -1;
@@ -1570,7 +1570,7 @@ int AINode_Respawn(bot_state_t *bs) {
 	if (bs->respawnchat_time && bs->respawnchat_time < FloatTime() - 0.5) {
 		trap_EA_Talk(bs->client);
 	}
-	//
+
 	return qtrue;
 }
 
@@ -1579,7 +1579,7 @@ int AINode_Respawn(bot_state_t *bs) {
 BotSelectActivateWeapon
 ==================
 */
-int BotSelectActivateWeapon(bot_state_t *bs) {
+static int BotSelectActivateWeapon(bot_state_t *bs) {
 	if (bs->inventory[INVENTORY_NIPPER] > 0 && bs->inventory[INVENTORY_NIPPERAMMO] > 0)
 		return WEAPONINDEX_NIPPER;
 	else if (bs->inventory[INVENTORY_PUMPER] > 0 && bs->inventory[INVENTORY_PUMPERAMMO] > 0)
@@ -1594,9 +1594,8 @@ int BotSelectActivateWeapon(bot_state_t *bs) {
 		return WEAPONINDEX_BETTY;
 	else if (bs->inventory[INVENTORY_IMPERIUS] > 0 && bs->inventory[INVENTORY_IMPERIUS] > 0)
 		return WEAPONINDEX_IMPERIUS;
-	else {
-		return -1;
-	}
+
+	return -1;
 }
 
 /*
@@ -1865,7 +1864,6 @@ int AINode_Seek_NBG(bot_state_t *bs) {
 	// if in lava or slime the bot should be able to get out
 	if (BotInLavaOrSlime(bs))
 		bs->tfl |= TFL_LAVA | TFL_SLIME;
-	//
 
 	// map specific code
 	BotMapScripts(bs);
@@ -1879,7 +1877,7 @@ int AINode_Seek_NBG(bot_state_t *bs) {
 		BotChooseWeapon(bs);
 		bs->nbg_time = 0;
 	}
-	//
+
 	if (bs->nbg_time < FloatTime()) {
 		// pop the current goal from the stack
 		trap_BotPopGoal(bs->gs);
@@ -1961,8 +1959,7 @@ qboolean BotDefendsCapturedBalloon(bot_state_t *bs) {
 	// G_Printf("#%d -> %d ",index, state);
 	if ((BotTeam(bs) == TEAM_RED && state == '1') || (BotTeam(bs) == TEAM_BLUE && state == '2'))
 		return qtrue;
-	else
-		return qfalse;
+	return qfalse;
 }
 
 void CheckHealth(bot_state_t *bs) {
@@ -2017,38 +2014,14 @@ void CheckHealth(bot_state_t *bs) {
 	}
 }
 
-/*bot_state_t* BotStateForName( char* botname ){
-	int i;
-	char buf[MAX_INFO_STRING];
-	char name[MAX_INFO_STRING];
-	bot_state_t* bs;
-
-	for( i=0; i<MAX_CLIENTS; i++ ){
-		trap_GetConfigstring(CS_PLAYERS+i, buf, sizeof(buf));
-		strncpy(name, Info_ValueForKey(buf, "n"), MAX_INFO_STRING-1);
-		name[MAX_INFO_STRING-1] = '\0';
-		Q_CleanStr( name );
-		if( !Q_stricmp(name, botname) )
-			break;
-	}
-
-	if( i == MAX_CLIENTS)
-		return NULL;
-
-	bs = botstates[i];
-	if(!bs->inuse)
-		return NULL;
-	return bs;
-}*/
-
-bot_state_t *BotStateForEntNum(int ent) {
+static bot_state_t *BotStateForEntNum(int ent) {
 	if (!g_entities[ent].inuse || !g_entities[ent].client || !(g_entities[ent].r.svFlags & SVF_BOT))
 		return NULL;
 
 	return botstates[ent];
 }
 
-void Pos2Goal(vec3_t pos, bot_goal_t *goal) {
+static void Pos2Goal(vec3_t pos, bot_goal_t *goal) {
 	VectorCopy(pos, goal->origin);
 	goal->areanum = BotPointAreaNum(pos);
 	VectorSet(goal->mins, -8, -8, -8);
@@ -2179,8 +2152,6 @@ int AINode_Seek_LTG(bot_state_t *bs) {
 	vec3_t target, dir;
 	bot_moveresult_t moveresult;
 	int range;
-	// char buf[128];
-	// bot_goal_t tmpgoal;
 
 	if (BotIsObserver(bs)) {
 		AIEnter_Observer(bs, "seek ltg: observer");
@@ -2196,13 +2167,13 @@ int AINode_Seek_LTG(bot_state_t *bs) {
 		AIEnter_Respawn(bs, "seek ltg: bot dead");
 		return qfalse;
 	}
-	//
+
 	if (BotChat_Random(bs)) {
 		bs->stand_time = FloatTime() + BotChatTime(bs);
 		AIEnter_Stand(bs, "seek ltg: random chat");
 		return qfalse;
 	}
-	//
+
 	bs->tfl = TFL_DEFAULT;
 	/*	if( bs->inventory[INVENTORY_JUMPER] ){
 			bs->tfl |= TFL_JUMPER;
@@ -2212,14 +2183,13 @@ int AINode_Seek_LTG(bot_state_t *bs) {
 	// if in lava or slime the bot should be able to get out
 	if (BotInLavaOrSlime(bs))
 		bs->tfl |= TFL_LAVA | TFL_SLIME;
-	//
 
 	// map specific code
 	BotMapScripts(bs);
 	// reset enemy player (not wall)
 	if (!IsWall(bs->enemy))
 		bs->enemy = -1;
-	//
+
 	if (bs->killedenemy_time > FloatTime() - 2) {
 		if (random() < bs->thinktime * 1) {
 			trap_EA_Gesture(bs->client);
@@ -2241,7 +2211,7 @@ int AINode_Seek_LTG(bot_state_t *bs) {
 			return qfalse;
 		}
 	}
-	//
+
 	BotTeamGoals(bs, qfalse);
 	// cyr{
 	// check health
@@ -2265,7 +2235,6 @@ int AINode_Seek_LTG(bot_state_t *bs) {
 		else
 			range = 150;
 
-		//
 		if (gametype == GT_BALLOON) {
 			if (bs->ltgtype == LTG_BALLCAMP)
 				range = 0;
@@ -2285,7 +2254,6 @@ int AINode_Seek_LTG(bot_state_t *bs) {
 		if (tt_ltg && tt_ltg < range)
 			range = tt_ltg;
 
-		//
 		if (BotNearbyGoal(bs, bs->tfl, &goal, range)) {
 			bot_goal_t nbg;
 			int tt_nbg;
@@ -2318,7 +2286,7 @@ int AINode_Seek_LTG(bot_state_t *bs) {
 		// BotAI_Print(PRT_MESSAGE, "movement failure %d\n", moveresult.traveltype);
 		bs->ltg_time = 0;
 	}
-	//
+
 	BotAIBlocked(bs, &moveresult, qtrue);
 
 	// if the viewangles are used for the movement
@@ -2357,7 +2325,7 @@ int AINode_Seek_LTG(bot_state_t *bs) {
 	// if the weapon is used for the bot movement
 	if (moveresult.flags & MOVERESULT_MOVEMENTWEAPON)
 		bs->weaponnum = moveresult.weapon;
-	//
+
 	return qtrue;
 }
 
@@ -2438,7 +2406,6 @@ int AINode_Battle_Fight(bot_state_t *bs) {
 	}
 	// eigene cyr }
 
-	//
 	BotEntityInfo(bs->enemy, &entinfo);
 	if (!entinfo.valid) {
 		AIEnter_Seek_LTG(bs, "battle fight: enemy invalid");
@@ -2473,7 +2440,7 @@ int AINode_Battle_Fight(bot_state_t *bs) {
 			return qfalse;
 		}
 	}
-	//
+
 	VectorCopy(entinfo.origin, target);
 	// update the reachability area and origin if possible
 	areanum = BotPointAreaNum(target);
@@ -2511,7 +2478,7 @@ int AINode_Battle_Fight(bot_state_t *bs) {
 	}
 	// use holdable items
 	BotBattleUseItems(bs);
-	//
+
 	bs->tfl = TFL_DEFAULT;
 	/*	if( bs->inventory[INVENTORY_JUMPER] ){
 			bs->tfl |= TFL_JUMPER;
@@ -2521,7 +2488,6 @@ int AINode_Battle_Fight(bot_state_t *bs) {
 	// if in lava or slime the bot should be able to get out
 	if (BotInLavaOrSlime(bs))
 		bs->tfl |= TFL_LAVA | TFL_SLIME;
-	//
 
 	// choose the best weapon to fight with
 	BotChooseWeapon(bs);
@@ -2534,7 +2500,7 @@ int AINode_Battle_Fight(bot_state_t *bs) {
 		// BotAI_Print(PRT_MESSAGE, "movement failure %d\n", moveresult.traveltype);
 		bs->ltg_time = 0;
 	}
-	//
+
 	BotAIBlocked(bs, &moveresult, qfalse);
 	// aim at the enemy
 	BotAimAtEnemy(bs);
@@ -2613,7 +2579,6 @@ int AINode_Battle_Chase(bot_state_t *bs) {
 		return qfalse;
 	}
 
-	//
 	bs->tfl = TFL_DEFAULT;
 	/*	if( bs->inventory[INVENTORY_JUMPER] ){
 			bs->tfl |= TFL_JUMPER;
@@ -2654,7 +2619,7 @@ int AINode_Battle_Chase(bot_state_t *bs) {
 	if (bs->check_time < FloatTime()) {
 		bs->check_time = FloatTime() + 1;
 		range = 150;
-		//
+
 		if (BotNearbyGoal(bs, bs->tfl, &goal, range)) {
 			// the bot gets 5 seconds to pick up the nearby goal item
 			bs->nbg_time = FloatTime() + 0.1 * range + 1;
@@ -2663,7 +2628,7 @@ int AINode_Battle_Chase(bot_state_t *bs) {
 			return qfalse;
 		}
 	}
-	//
+
 	BotUpdateBattleInventory(bs, bs->enemy);
 	// initialize the movement state
 	BotSetupForMovement(bs);
@@ -2676,9 +2641,9 @@ int AINode_Battle_Chase(bot_state_t *bs) {
 		// BotAI_Print(PRT_MESSAGE, "movement failure %d\n", moveresult.traveltype);
 		bs->ltg_time = 0;
 	}
-	//
+
 	BotAIBlocked(bs, &moveresult, qfalse);
-	//
+
 	if (moveresult.flags & (MOVERESULT_MOVEMENTVIEWSET | MOVERESULT_MOVEMENTVIEW | MOVERESULT_SWIMVIEW)) {
 		VectorCopy(moveresult.ideal_viewangles, bs->ideal_viewangles);
 	} else if (!(bs->flags & BFL_IDEALVIEWSET)) {
@@ -2773,7 +2738,7 @@ int AINode_Battle_Retreat(bot_state_t *bs) {
 		BotAI_Print(PRT_MESSAGE, "found new better enemy\n");
 #endif
 	}
-	//
+
 	bs->tfl = TFL_DEFAULT;
 	/*	if( bs->inventory[INVENTORY_JUMPER] ){
 			bs->tfl |= TFL_JUMPER;
@@ -2820,7 +2785,7 @@ int AINode_Battle_Retreat(bot_state_t *bs) {
 			return qfalse;
 		}
 	}
-	//
+
 	BotTeamGoals(bs, qtrue);
 	// use holdable items
 	BotBattleUseItems(bs);
@@ -2854,7 +2819,6 @@ int AINode_Battle_Retreat(bot_state_t *bs) {
 			range -= (float)150 / 8 * bs->inventory[INVENTORY_SPRAYPISTOLAMMO];
 		}
 
-		//
 		if (BotNearbyGoal(bs, bs->tfl, &goal, range)) {
 			trap_BotResetLastAvoidReach(bs->ms);
 			// time the bot gets to pick up the nearby goal item
@@ -2903,7 +2867,7 @@ int AINode_Battle_Retreat(bot_state_t *bs) {
 		// BotAI_Print(PRT_MESSAGE, "movement failure %d\n", moveresult.traveltype);
 		bs->ltg_time = 0;
 	}
-	//
+
 	BotAIBlocked(bs, &moveresult, qfalse);
 	// choose the best weapon to fight with
 	BotChooseWeapon(bs);
@@ -2930,7 +2894,7 @@ int AINode_Battle_Retreat(bot_state_t *bs) {
 		bs->weaponnum = moveresult.weapon;
 	// attack the enemy if possible
 	BotCheckAttack(bs);
-	//
+
 	return qtrue;
 }
 
@@ -2981,7 +2945,7 @@ int AINode_Battle_NBG(bot_state_t *bs) {
 		AIEnter_Seek_NBG(bs, "battle nbg: no enemy");
 		return qfalse;
 	}
-	//
+
 	BotEntityInfo(bs->enemy, &entinfo);
 	if (!entinfo.valid || EntityIsDead(&entinfo)) {
 		AIEnter_Seek_NBG(bs, "battle nbg: enemy dead");
@@ -2993,7 +2957,6 @@ int AINode_Battle_NBG(bot_state_t *bs) {
 		return qfalse;
 	}
 
-	//
 	bs->tfl = TFL_DEFAULT;
 	/*	if( bs->inventory[INVENTORY_JUMPER] ){
 			bs->tfl |= TFL_JUMPER;
@@ -3003,7 +2966,6 @@ int AINode_Battle_NBG(bot_state_t *bs) {
 	// if in lava or slime the bot should be able to get out
 	if (BotInLavaOrSlime(bs))
 		bs->tfl |= TFL_LAVA | TFL_SLIME;
-	//
 
 	// map specific code
 	BotMapScripts(bs);
@@ -3025,7 +2987,7 @@ int AINode_Battle_NBG(bot_state_t *bs) {
 	} else if (BotReachedGoal(bs, &goal)) {
 		bs->nbg_time = 0;
 	}
-	//
+
 	if (bs->nbg_time < FloatTime()) {
 		// pop the current goal from the stack
 		trap_BotPopGoal(bs->gs);
@@ -3034,7 +2996,7 @@ int AINode_Battle_NBG(bot_state_t *bs) {
 			AIEnter_Battle_Retreat(bs, "battle nbg: time out");
 		else
 			AIEnter_Battle_Fight(bs, "battle nbg: time out");
-		//
+
 		return qfalse;
 	}
 	// initialize the movement state
@@ -3048,7 +3010,7 @@ int AINode_Battle_NBG(bot_state_t *bs) {
 		// BotAI_Print(PRT_MESSAGE, "movement failure %d\n", moveresult.traveltype);
 		bs->nbg_time = 0;
 	}
-	//
+
 	BotAIBlocked(bs, &moveresult, qfalse);
 	// update the attack inventory values
 	BotUpdateBattleInventory(bs, bs->enemy);
@@ -3078,6 +3040,6 @@ int AINode_Battle_NBG(bot_state_t *bs) {
 		bs->weaponnum = moveresult.weapon;
 	// attack the enemy if possible
 	BotCheckAttack(bs);
-	//
+
 	return qtrue;
 }

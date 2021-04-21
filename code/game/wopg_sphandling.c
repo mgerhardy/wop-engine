@@ -4,26 +4,12 @@
 
 #ifdef UI
 #include "../ui/ui_local.h"
-
-/*
-static executeCmd(const char* cmd) {
-	trap_Cmd_ExecuteText(EXEC_APPEND, cmd);
-}
-*/
 #else
 #include "g_local.h"
-
 static wop_StoryElement_t game_currentSE;
-
-/*
-static executeCmd(const char* cmd) {
-	trap_SendConsoleCommand(EXEC_APPEND, cmd);
-}
-*/
 #endif
 
 // num args: trap_Argc()
-
 static const char *wopSP_Argv(int i) {
 	static char str[MAX_TOKEN_CHARS];
 
@@ -105,53 +91,55 @@ static void wopSP_cmd_startStory(void) {
 }
 
 static void wopSP_cmd_loadStory(void) {
+	char savename[MAX_CVAR_VALUE_STRING];
+	wop_StoryElement_t tmpE;
+	int seNr = -1;
+
 	if (trap_Argc() < 2) {
 		Com_Printf("  usage: %s [storyname]\n", wopSP_Argv(0));
-	} else {
-		char savename[MAX_CVAR_VALUE_STRING];
-		int seNr = -1;
-
-		trap_Cvar_VariableStringBuffer(WOPSP_SAVENAME_CVAR, savename, sizeof(savename));
-
-		seNr = wopSP_loadLastWonSE(wopSP_Argv(1), savename);
-
-		if (seNr >= 0) {
-			wop_StoryElement_t tmpE;
-
-			if (!wopSP_openStory(wopSP_Argv(1))) {
-				wopSP_findStoryElement(va("#%d", seNr), &tmpE);
-
-				if (!wopSP_validSE(&tmpE)) {
-					Com_Printf("Couldn't find the saved story element. (seNr: %d)\n", seNr);
-					return;
-				}
-
-				if (tmpE.nextAfterWin[0]) {
-					// using va to have a copy of the string ;P
-					wopSP_findStoryElement(va("%s", tmpE.nextAfterWin), &tmpE);
-				} else {
-					if (0 > wopSP_findStoryElement(va("#%d", tmpE.elementID + 1), &tmpE)) {
-						wopSP_initStoryElement(&tmpE);
-						Com_Printf("Couldn't find a next story element, after the saft one, probably the story was "
-								   "already finished\n");
-					}
-				}
-
-				wopSP_closeFile();
-			}
-
-			if (wopSP_validSE(&tmpE))
-				wopSP_startStory(wopSP_Argv(1), va("#%d", tmpE.elementID));
-		} else
-			Com_Printf("Couldn't find a saved state for this story.\n");
+		return;
 	}
+
+	trap_Cvar_VariableStringBuffer(WOPSP_SAVENAME_CVAR, savename, sizeof(savename));
+
+	seNr = wopSP_loadLastWonSE(wopSP_Argv(1), savename);
+
+	if (seNr < 0) {
+		Com_Printf("Couldn't find a saved state for this story.\n");
+		return;
+	}
+
+	if (!wopSP_openStory(wopSP_Argv(1))) {
+		wopSP_findStoryElement(va("#%d", seNr), &tmpE);
+
+		if (!wopSP_validSE(&tmpE)) {
+			Com_Printf("Couldn't find the saved story element. (seNr: %d)\n", seNr);
+			return;
+		}
+
+		if (tmpE.nextAfterWin[0]) {
+			// using va to have a copy of the string ;P
+			wopSP_findStoryElement(va("%s", tmpE.nextAfterWin), &tmpE);
+		} else {
+			if (0 > wopSP_findStoryElement(va("#%d", tmpE.elementID + 1), &tmpE)) {
+				wopSP_initStoryElement(&tmpE);
+				Com_Printf("Couldn't find a next story element, after the saft one, probably the story was "
+						   "already finished\n");
+			}
+		}
+
+		wopSP_closeFile();
+	}
+
+	if (wopSP_validSE(&tmpE))
+		wopSP_startStory(wopSP_Argv(1), va("#%d", tmpE.elementID));
 }
 
 static void wopSP_cmd_stopStory(void) {
 	trap_Cvar_Set(WOPSP_STORY_CVAR, "");
 	trap_Cvar_Set(WOPSP_SELEMENT_CVAR, "");
 
-#ifndef UI									 // only in game-code
+#ifndef UI // only in game-code
 	wopSP_initStoryElement(&game_currentSE); // NOTE: it's more a "clear" than a init
 #endif
 }
@@ -195,7 +183,6 @@ static qboolean won_intermission = qfalse;
 static qboolean wopSP_calcWon(void) {
 	int i;
 	gentity_t *player;
-	int playerClientNum;
 
 	// find the real player
 	player = NULL;
@@ -211,20 +198,18 @@ static qboolean wopSP_calcWon(void) {
 	if (!player || i == level.maxclients) {
 		return qfalse;
 	}
-	playerClientNum = i;
 
 	if (g_gametype.integer >= GT_TEAM) {
 		if ((player->client->sess.sessionTeam == TEAM_RED &&
 			 level.teamScores[TEAM_RED] > level.teamScores[TEAM_BLUE]) ||
 			(player->client->sess.sessionTeam == TEAM_BLUE && level.teamScores[TEAM_RED] < level.teamScores[TEAM_BLUE]))
 			return qtrue;
-		else
-			return qfalse;
-	} else {
-		CalculateRanks();
-
-		return (player->client->ps.persistant[PERS_RANK] == 0);
+		return qfalse;
 	}
+
+	CalculateRanks();
+
+	return (player->client->ps.persistant[PERS_RANK] == 0);
 }
 
 void wopSP_OnIntermission(void) {
@@ -430,7 +415,6 @@ void wopSP_firstFrame(void) {
 }
 
 void wopSP_client0Begins(void) {
-
 	if (!wopSP_validSE(&game_currentSE))
 		return;
 

@@ -88,8 +88,6 @@ bot_moveresult_t BotAttackMove(bot_state_t *bs, int tfl);
 int BotSameTeam(bot_state_t *bs, int entnum);
 // returns true if teamplay is on
 int TeamPlayIsOn(void);
-// get the number of visible teammates and enemies
-void BotVisibleTeamMatesAndEnemies(bot_state_t *bs, int *teammates, int *enemies, float range);
 // returns true if within the field of vision for the given angles
 qboolean InFieldOfVision(vec3_t viewangles, float fov, vec3_t angles);
 // returns true and sets the .enemy field when an enemy is found
