@@ -7,7 +7,7 @@ From the ioquake3 root, navigate to misc/xcode and open the ioquake3.xcworkspace
 
 Hopefully people working with ioquake3 on macOS will benefit from using Xcode for building, hacking and debugging.
 
-NOTE: THE FIRST BUILD WITH XCODE WILL LIKELY FAIL. Subsequent builds will succeed. This is related to the second bullet point below. Some of the files necessary are created via a build phase but more recent versions of Xcode are less forgiving about the files being missing initially so the first build will fail. If anyone has a better way to handle this please let me know. 
+NOTE: THE FIRST BUILD WITH XCODE WILL LIKELY FAIL. Subsequent builds will succeed. This is related to the second bullet point below. Some of the files necessary are created via a build phase but more recent versions of Xcode are less forgiving about the files being missing initially so the first build will fail. If anyone has a better way to handle this please let me know.
 
 LIBRARIES:
 
@@ -26,7 +26,6 @@ LIBRARIES:
 
 TODO:
 - dedicated support
-- missionpack support
 - curl.xcodeproj
 - ogg.xcodeproj (ogg vorbis support)
 - zlib.xcodeproj

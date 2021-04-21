@@ -104,173 +104,6 @@ void G_ExplodeMissile(gentity_t *ent) {
 	trap_LinkEntity(ent);
 }
 
-#ifdef MISSIONPACK
-/*
-================
-ProximityMine_Explode
-================
-*/
-static void ProximityMine_Explode(gentity_t *mine) {
-	G_ExplodeMissile(mine);
-	// if the prox mine has a trigger free it
-	if (mine->activator) {
-		G_FreeEntity(mine->activator);
-		mine->activator = NULL;
-	}
-}
-
-/*
-================
-ProximityMine_Die
-================
-*/
-static void ProximityMine_Die(gentity_t *ent, gentity_t *inflictor, gentity_t *attacker, int damage, int mod) {
-	ent->think = ProximityMine_Explode;
-	ent->nextthink = level.time + 1;
-}
-
-/*
-================
-ProximityMine_Trigger
-================
-*/
-void ProximityMine_Trigger(gentity_t *trigger, gentity_t *other, trace_t *trace) {
-	vec3_t v;
-	gentity_t *mine;
-
-	if (!other->client) {
-		return;
-	}
-
-	// trigger is a cube, do a distance test now to act as if it's a sphere
-	VectorSubtract(trigger->s.pos.trBase, other->s.pos.trBase, v);
-	if (VectorLength(v) > trigger->parent->splashRadius) {
-		return;
-	}
-
-	if (g_gametype.integer >= GT_TEAM) {
-		// don't trigger same team mines
-		if (trigger->parent->s.generic1 == other->client->sess.sessionTeam) {
-			return;
-		}
-	}
-
-	// ok, now check for ability to damage so we don't get triggered through walls, closed doors, etc...
-	if (!CanDamage(other, trigger->s.pos.trBase)) {
-		return;
-	}
-
-	// trigger the mine!
-	mine = trigger->parent;
-	mine->s.loopSound = 0;
-	G_AddEvent(mine, EV_PROXIMITY_MINE_TRIGGER, 0);
-	mine->nextthink = level.time + 500;
-
-	G_FreeEntity(trigger);
-}
-
-/*
-================
-ProximityMine_Activate
-================
-*/
-static void ProximityMine_Activate(gentity_t *ent) {
-	gentity_t *trigger;
-	float r;
-
-	ent->think = ProximityMine_Explode;
-	ent->nextthink = level.time + g_proxMineTimeout.integer;
-
-	ent->takedamage = qtrue;
-	ent->health = 1;
-	ent->die = ProximityMine_Die;
-
-	ent->s.loopSound = G_SoundIndex("sound/weapons/proxmine/wstbtick.wav");
-
-	// build the proximity trigger
-	trigger = G_Spawn();
-
-	trigger->classname = "proxmine_trigger";
-
-	r = ent->splashRadius;
-	VectorSet(trigger->r.mins, -r, -r, -r);
-	VectorSet(trigger->r.maxs, r, r, r);
-
-	G_SetOrigin(trigger, ent->s.pos.trBase);
-
-	trigger->parent = ent;
-	trigger->r.contents = CONTENTS_TRIGGER;
-	trigger->touch = ProximityMine_Trigger;
-
-	trap_LinkEntity(trigger);
-
-	// set pointer to trigger so the entity can be freed when the mine explodes
-	ent->activator = trigger;
-}
-
-/*
-================
-ProximityMine_ExplodeOnPlayer
-================
-*/
-static void ProximityMine_ExplodeOnPlayer(gentity_t *mine) {
-	gentity_t *player;
-
-	player = mine->enemy;
-	player->client->ps.eFlags &= ~EF_TICKING;
-
-	if (player->client->invulnerabilityTime > level.time) {
-		G_Damage(player, mine->parent, mine->parent, vec3_origin, mine->s.origin, 1000, DAMAGE_NO_KNOCKBACK,
-				 MOD_JUICED);
-		player->client->invulnerabilityTime = 0;
-		G_TempEntity(player->client->ps.origin, EV_JUICED);
-	} else {
-		G_SetOrigin(mine, player->s.pos.trBase);
-		// make sure the explosion gets to the client
-		mine->r.svFlags &= ~SVF_NOCLIENT;
-		mine->splashMethodOfDeath = MOD_PROXIMITY_MINE;
-		G_ExplodeMissile(mine);
-	}
-}
-
-/*
-================
-ProximityMine_Player
-================
-*/
-static void ProximityMine_Player(gentity_t *mine, gentity_t *player) {
-	if (mine->s.eFlags & EF_NODRAW) {
-		return;
-	}
-
-	G_AddEvent(mine, EV_PROXIMITY_MINE_STICK, 0);
-
-	if (player->s.eFlags & EF_TICKING) {
-		player->activator->splashDamage += mine->splashDamage;
-		player->activator->splashRadius *= 1.50;
-		mine->think = G_FreeEntity;
-		mine->nextthink = level.time;
-		return;
-	}
-
-	player->client->ps.eFlags |= EF_TICKING;
-	player->activator = mine;
-
-	mine->s.eFlags |= EF_NODRAW;
-	mine->r.svFlags |= SVF_NOCLIENT;
-	mine->s.pos.trType = TR_LINEAR;
-	VectorClear(mine->s.pos.trDelta);
-
-	mine->enemy = player;
-	mine->think = ProximityMine_ExplodeOnPlayer;
-	if (player->client->invulnerabilityTime > level.time) {
-		mine->nextthink = level.time + 2 * 1000;
-	} else {
-		mine->nextthink = level.time + 10 * 1000;
-	}
-}
-#endif
-
 /*
 ================
 G_MissileImpact
@@ -279,10 +112,6 @@ G_MissileImpact
 void G_MissileImpact(gentity_t *ent, trace_t *trace) {
 	gentity_t *other;
 	qboolean hitClient = qfalse;
-#ifdef MISSIONPACK
-	vec3_t forward, impactpoint, bouncedir;
-	int eFlags;
-#endif
 	other = &g_entities[trace->entityNum];
 
 	// check for bounce
@@ -291,26 +120,6 @@ void G_MissileImpact(gentity_t *ent, trace_t *trace) {
 		return;
 	}
 
-#ifdef MISSIONPACK
-	if (other->takedamage) {
-		if (ent->s.weapon != WP_PROX_LAUNCHER) {
-			if (other->client && other->client->invulnerabilityTime > level.time) {
-				//
-				VectorCopy(ent->s.pos.trDelta, forward);
-				VectorNormalize(forward);
-				if (G_InvulnerabilityEffect(other, forward, ent->s.pos.trBase, impactpoint, bouncedir)) {
-					VectorCopy(bouncedir, trace->plane.normal);
-					eFlags = ent->s.eFlags & EF_BOUNCE_HALF;
-					ent->s.eFlags &= ~EF_BOUNCE_HALF;
-					G_BounceMissile(ent, trace);
-					ent->s.eFlags |= eFlags;
-				}
-				ent->target_ent = other;
-				return;
-			}
-		}
-	}
-#endif
 	// impact damage
 	if (other->takedamage) {
 		// FIXME: wrong damage direction?
@@ -338,10 +147,11 @@ void G_MissileImpact(gentity_t *ent, trace_t *trace) {
 			// check for "impressive" reward sound
 			ent->parent->client->accurateCount++;
 			if (ent->parent->client->accurateCount >= 2) {
-				ent->parent->client->accurateCount--; //-= 2;
-													  //				ent->parent->client->ps.persistant[PERS_IMPRESSIVE_COUNT]++;
-													  //				// add the sprite over the player's head
-													  //				SetAward( ent->parent->client, AWARD_IMPRESSIVE );
+				ent->parent->client
+					->accurateCount--; //-= 2;
+									   //				ent->parent->client->ps.persistant[PERS_IMPRESSIVE_COUNT]++;
+									   //				// add the sprite over the player's head
+									   //				SetAward( ent->parent->client, AWARD_IMPRESSIVE );
 				G_AddEvent(ent->parent, EV_HEHE2, 0);
 			}
 		}
@@ -493,7 +303,7 @@ static void move_killerducks(gentity_t *ent) {
 	}
 	// CJP end
 
-	opferlenght = (1024.0f * 1024.0f); // 262144.0f;//(512.0f)²
+	opferlenght = (1024.0f * 1024.0f); // 262144.0f;//(512.0f)
 	opfer = -1;
 	for (i = 0; i < g_maxclients.integer; i++) {
 		if (level.clients[i].pers.connected != CON_CONNECTED)
@@ -509,7 +319,7 @@ static void move_killerducks(gentity_t *ent) {
 		tmpv3[0] = level.clients[i].ps.origin[0] - ent->r.currentOrigin[0];
 		tmpv3[1] = level.clients[i].ps.origin[1] - ent->r.currentOrigin[1];
 		tmpv3[2] = (level.clients[i].ps.origin[2] - ent->r.currentOrigin[2]) *
-				   2.0f; // die höhe soll stärker gewertet werden ...
+				   2.0f; // the height should have the higher influence
 
 		tmpv3[0] = tmpv3[0] * tmpv3[0] + tmpv3[1] * tmpv3[1] + tmpv3[2] * tmpv3[2];
 
@@ -524,7 +334,7 @@ static void move_killerducks(gentity_t *ent) {
 		tmpv3[0] = level.clients[ownerNum].ps.origin[0] - ent->r.currentOrigin[0];
 		tmpv3[1] = level.clients[ownerNum].ps.origin[1] - ent->r.currentOrigin[1];
 		tmpv3[2] = (level.clients[ownerNum].ps.origin[2] - ent->r.currentOrigin[2]) *
-				   2.0f; // die höhe soll stärker gewertet werden ...
+				   2.0f; // the height should have the higher influence
 
 		tmpv3[0] = tmpv3[0] * tmpv3[0] + tmpv3[1] * tmpv3[1] + tmpv3[2] * tmpv3[2];
 
@@ -534,8 +344,8 @@ static void move_killerducks(gentity_t *ent) {
 		}
 	}
 
-	if (opfer != -1 &&
-		(level.time - (ent->nextthink - 10000)) > 500) // in die ersten 1/2 sek. sollen die opfer egal sein
+	if (opfer != -1 && (level.time - (ent->nextthink - 10000)) >
+						   500) // the first half of the second shouldn't matter much for the victim
 	{
 		float tmpf;
 
@@ -567,7 +377,7 @@ static void move_killerducks(gentity_t *ent) {
 			tmpf = 1 / sqrt(tmpf); // also wenn die wurzel aus >400 0 wird ist eh der weltuntergang nicht mehr weit O_o
 
 			if (ent->s.pos.trDelta[0] * tmpv3[0] + ent->s.pos.trDelta[1] * tmpv3[1] <
-				0.98) // cos<0.98 -> größer ~10° abweichung
+				0.98) // cos<0.98 -> more than ~10 degree difference
 			{
 				ent->s.pos.trDelta[0] = tmpv3[0] * 400.0f;
 				ent->s.pos.trDelta[1] = tmpv3[1] * 400.0f;
@@ -627,28 +437,17 @@ static void move_killerducks(gentity_t *ent) {
 	tmpv3[1] = ent->s.pos.trBase[1] + ent->s.pos.trDelta[1] * (float)tmptime * 0.001f;
 	tmpv3[2] = ent->s.pos.trBase[2] + ent->s.pos.trDelta[2] * (float)tmptime * 0.001f -
 			   ent->s.pos.trDelta[2] *
-				   ((float)tmptime * (float)tmptime * 0.000001f); // 0.001² ... hmm was sollte das //noch mal O_o
+				   ((float)tmptime * (float)tmptime * 0.000001f); // 0.001 ... hmm was sollte das //noch mal O_o
 
 	trap_Trace(&tr, ent->s.pos.trBase, ent->r.mins, ent->r.maxs, tmpv3, ent->s.number, ent->clipmask);
 
-	//	if(ent->s.pos.trDelta[2]<1)// don't change the direction whenever we move upwards (JUMP/JUMP_PAD)
-	//	{
 	if (tr.fraction != 1.0f) {
-		//			if(((ent->s.pos.trDelta[0]*ent->s.pos.trDelta[0]+ent->s.pos.trDelta[1]*ent->s.pos.trDelta[1])<ent->s.pos.trDelta[2]*ent->s.pos.trDelta[2])
-		//&& 					tr.plane.normal[2]>0.8f)
-		//			{
-		//				ent->s.pos.trDelta[2]=0;
-		//			}
-		//			else
-		if (tr.contents & CONTENTS_SOLID) // tr.entityNum==ENTITYNUM_WORLD)//!=opfer)
-		{
+		if (tr.contents & CONTENTS_SOLID) {
 			vec3_t oldvel;
 
 			// check jump
 			trace_t trj;
 
-			//				if(tr.plane.normal[2]<1.0f)
-			//				{
 			tmpv3_2[0] = tmpv3[0];
 			tmpv3_2[1] = tmpv3[1];
 			tmpv3_2[2] = tmpv3[2] + 64;
@@ -656,21 +455,11 @@ static void move_killerducks(gentity_t *ent) {
 
 			if (trj.entityNum == opfer)
 				trj.startsolid = qtrue; // don't jump on top of the "opfer" ^^
-			//				}
-			//				else
-			//					trj.plane.normal[2]=0.0f;//uah O_o
 
 			if (trj.startsolid == qfalse && trj.plane.normal[2] > 0.8f) {
-				//					if(trj.fraction>0.5f)
-				//					{//uah not nice ;)
 				tr.endpos[0] = trj.endpos[0];
 				tr.endpos[1] = trj.endpos[1];
 				tr.endpos[2] = trj.endpos[2];
-				//					}
-				//					else
-				//					{
-				//						ent->s.pos.trDelta[2]+=400;
-				//					}
 			} else {
 				// CJ end
 
@@ -714,7 +503,6 @@ static void move_killerducks(gentity_t *ent) {
 			//:HERBY:ee
 		}
 	}
-	//	}
 
 	if ((tr.entityNum == opfer) && (ent->s.time2 <= level.time)) {
 		G_AddEvent(ent, EV_GENERAL_SOUND, G_SoundIndex("sounds/weapons/killerducks/bite"));
@@ -748,7 +536,6 @@ static void think_slickent(gentity_t *ent) {
 }
 
 static void touch_slickent(gentity_t *self, gentity_t *other, trace_t *trace) {
-	//	Com_Printf("touched slickent(self/cNum=%i|other/cNum=%i)\n",self->s.clientNum,other->s.clientNum);
 	other->client->last_slickent_touch = level.time;
 	other->client->ps.pm_flags |= PMF_TOUCHSLICKENT;
 }

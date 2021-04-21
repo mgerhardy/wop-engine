@@ -3032,20 +3032,26 @@ void Item_Text_Paint(itemDef_t *item) {
 
 	//	if (item->textStyle == ITEM_TEXTSTYLE_OUTLINED || item->textStyle == ITEM_TEXTSTYLE_OUTLINESHADOWED) {
 	//		Fade(&item->window.flags, &item->window.outlineColor[3], DC->Assets.fadeClamp, &item->window.nextTime,
-	//DC->Assets.fadeCycle, qfalse);
+	// DC->Assets.fadeCycle, qfalse);
 	//		/*
 	//		Text_Paint(item->textRect.x-1, item->textRect.y-1, item->textscale, item->window.foreColor, textPtr,
-	//adjust); 		Text_Paint(item->textRect.x, item->textRect.y-1, item->textscale, item->window.foreColor, textPtr,
-	//adjust); 		Text_Paint(item->textRect.x+1, item->textRect.y-1, item->textscale, item->window.foreColor, textPtr,
-	//adjust); 		Text_Paint(item->textRect.x-1, item->textRect.y, item->textscale, item->window.foreColor, textPtr,
-	//adjust); 		Text_Paint(item->textRect.x+1, item->textRect.y, item->textscale, item->window.foreColor, textPtr,
-	//adjust); 		Text_Paint(item->textRect.x-1, item->textRect.y+1, item->textscale, item->window.foreColor, textPtr,
-	//adjust); 		Text_Paint(item->textRect.x, item->textRect.y+1, item->textscale, item->window.foreColor, textPtr,
-	//adjust); 		Text_Paint(item->textRect.x+1, item->textRect.y+1, item->textscale, item->window.foreColor, textPtr,
-	//adjust);
+	// adjust); 		Text_Paint(item->textRect.x, item->textRect.y-1, item->textscale, item->window.foreColor,
+	// textPtr,
+	// adjust); 		Text_Paint(item->textRect.x+1, item->textRect.y-1, item->textscale, item->window.foreColor,
+	// textPtr,
+	// adjust); 		Text_Paint(item->textRect.x-1, item->textRect.y, item->textscale, item->window.foreColor,
+	// textPtr,
+	// adjust); 		Text_Paint(item->textRect.x+1, item->textRect.y, item->textscale, item->window.foreColor,
+	// textPtr,
+	// adjust); 		Text_Paint(item->textRect.x-1, item->textRect.y+1, item->textscale, item->window.foreColor,
+	// textPtr,
+	// adjust); 		Text_Paint(item->textRect.x, item->textRect.y+1, item->textscale, item->window.foreColor,
+	// textPtr,
+	// adjust); 		Text_Paint(item->textRect.x+1, item->textRect.y+1, item->textscale, item->window.foreColor,
+	// textPtr, adjust);
 	//		*/
 	//		DC->drawText(item->textRect.x - 1, item->textRect.y + 1, item->textscale * 1.02, item->window.outlineColor,
-	//textPtr, adjust);
+	// textPtr, adjust);
 	//	}
 
 	DC->drawText(item->textRect.x, item->textRect.y, item->textscale, color, textPtr, 0, 0, item->textStyle);
@@ -3220,12 +3226,6 @@ static bind_t g_bindings[] = {{"+scores", K_TAB, -1, -1, -1},
 							  {"messagemode4", -1, -1, -1, -1}};
 
 static const int g_bindCount = ARRAY_LEN(g_bindings);
-
-#ifndef MISSIONPACK
-static configcvar_t g_configcvars[] = {{"cl_run", 0, 0},	  {"m_pitch", 0, 0},	 {"cg_autoswitch", 0, 0},
-									   {"sensitivity", 0, 0}, {"in_joystick", 0, 0}, {"joy_threshold", 0, 0},
-									   {"m_filter", 0, 0},	  {"cl_freelook", 0, 0}, {NULL, 0, 0}};
-#endif
 
 /*
 =================
@@ -5785,11 +5785,6 @@ void Menu_Reset(void) {
 displayContextDef_t *Display_GetContext(void) {
 	return DC;
 }
-
-#ifndef MISSIONPACK
-static float captureX;
-static float captureY;
-#endif
 
 void *Display_CaptureItem(int x, int y) {
 	int i;

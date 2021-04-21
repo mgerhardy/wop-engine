@@ -415,7 +415,7 @@ static void CG_OffsetFirstPersonView(void) {
 	{
 #define NECK_LENGTH 8
 	vec3_t			forward, up;
- 
+
 	cg.refdef.vieworg[2] -= NECK_LENGTH;
 	AngleVectors( cg.refdefViewAngles, forward, NULL, up );
 	VectorMA( cg.refdef.vieworg, 3, forward, cg.refdef.vieworg );
@@ -1090,10 +1090,6 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 	// add buffered sounds
 	CG_PlayBufferedSounds();
 
-#ifdef MISSIONPACK
-	// play buffered voice chats
-	CG_PlayBufferedVoiceChats();
-#endif
 	if (cg.snap->ps.ammo[WP_SPRAYPISTOL] >= 8 && cg.sprayyourcolortime < cg.time) {
 		trap_S_StartLocalSound(cgs.media.Announcer_SprayYourColor, cg.snap->ps.clientNum);
 		cg.sprayyourcolortime = cg.time + 20000;

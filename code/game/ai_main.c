@@ -2078,18 +2078,7 @@ int BotAIStartFrame(int time) {
 				trap_BotLibUpdateEntity(i, NULL);
 				continue;
 			}
-#ifdef MISSIONPACK
-			// never link prox mine triggers
-			if (ent->r.contents == CONTENTS_TRIGGER) {
-				if (ent->touch == ProximityMine_Trigger) {
-					trap_BotLibUpdateEntity(i, NULL);
-					continue;
-				}
-			}
-#endif
-			//
-			memset(&state, 0, sizeof(bot_entitystate_t));
-			//
+			memset(&state, 0, sizeof(state));
 			VectorCopy(ent->r.currentOrigin, state.origin);
 			if (i < MAX_CLIENTS) {
 				VectorCopy(ent->s.apos.trBase, state.angles);
@@ -2115,7 +2104,6 @@ int BotAIStartFrame(int time) {
 			state.legsAnim = ent->s.legsAnim;
 			state.torsoAnim = ent->s.torsoAnim;
 			state.weapon = ent->s.weapon;
-			//
 			trap_BotLibUpdateEntity(i, &state);
 		}
 
@@ -2131,9 +2119,7 @@ int BotAIStartFrame(int time) {
 		if (!botstates[i] || !botstates[i]->inuse) {
 			continue;
 		}
-		//
 		botstates[i]->botthink_residual += elapsed_time;
-		//
 		if (botstates[i]->botthink_residual >= thinktime) {
 			botstates[i]->botthink_residual -= thinktime;
 
@@ -2246,10 +2232,6 @@ int BotInitLibrary(void) {
 	trap_Cvar_VariableStringBuffer("fs_homepath", buf, sizeof(buf));
 	if (strlen(buf))
 		trap_BotLibVarSet("homedir", buf);
-		//
-#ifdef MISSIONPACK
-	trap_BotLibDefine("MISSIONPACK");
-#endif
 	// setup the bot library
 	return trap_BotLibSetup();
 }

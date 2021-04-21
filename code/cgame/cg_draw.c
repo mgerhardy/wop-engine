@@ -1758,9 +1758,6 @@ static void CG_DrawCenterString(void) {
 	char *start;
 	int l;
 	int x, y, w;
-#ifdef MISSIONPACK
-	int h;
-#endif
 	float *color;
 
 	if (!cg.centerPrintTime) {
@@ -1789,13 +1786,6 @@ static void CG_DrawCenterString(void) {
 		}
 		linebuffer[l] = 0;
 
-#ifdef MISSIONPACK
-		w = CG_Text_Width(linebuffer, 0.5, 0);
-		h = CG_Text_Height(linebuffer, 0.5, 0);
-		x = (SCREEN_WIDTH - w) / 2;
-		CG_Text_Paint(x, y + h, 0.5, color, linebuffer, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE);
-		y += h + 6;
-#else
 		w = cg.centerPrintCharWidth * CG_DrawStrlen(linebuffer);
 
 		x = (SCREEN_WIDTH - w) / 2;
@@ -1804,7 +1794,6 @@ static void CG_DrawCenterString(void) {
 						 (int)(cg.centerPrintCharWidth * 1.5), 0);
 
 		y += cg.centerPrintCharWidth * 1.5;
-#endif
 		while (*start && (*start != '\n')) {
 			start++;
 		}
@@ -2027,14 +2016,8 @@ static void CG_DrawCrosshairNames(void) {
 	}
 
 	name = cgs.clientinfo[cg.crosshairClientNum].name;
-#ifdef MISSIONPACK
-	color[3] *= 0.5f;
-	w = CG_Text_Width(name, 0.3f, 0);
-	CG_Text_Paint(320 - w / 2, 190, 0.3f, color, name, 0, 0, ITEM_TEXTSTYLE_SHADOWED);
-#else
 	w = CG_DrawStrlen(name) * BIGCHAR_WIDTH;
 	CG_DrawBigString(320 - w / 2, 170, name, color[3] * 0.5f);
-#endif
 	trap_R_SetColor(NULL);
 }
 
@@ -2123,67 +2106,7 @@ static void CG_DrawTeamVote(void) {
 }
 
 static qboolean CG_DrawScoreboard(void) {
-#ifdef MISSIONPACK
-	static qboolean firstTime = qtrue;
-
-	if (menuScoreboard) {
-		menuScoreboard->window.flags &= ~WINDOW_FORCED;
-	}
-	if (cg_paused.integer) {
-		cg.deferredPlayerLoading = 0;
-		firstTime = qtrue;
-		return qfalse;
-	}
-
-	// should never happen in Team Arena
-	if (cgs.gametype == GT_SINGLE_PLAYER && cg.predictedPlayerState.pm_type == PM_INTERMISSION) {
-		cg.deferredPlayerLoading = 0;
-		firstTime = qtrue;
-		return qfalse;
-	}
-
-	// don't draw scoreboard during death while warmup up
-	if (cg.warmup && !cg.showScores) {
-		return qfalse;
-	}
-
-	if (cg.showScores || cg.predictedPlayerState.pm_type == PM_DEAD ||
-		cg.predictedPlayerState.pm_type == PM_INTERMISSION) {
-	} else {
-		if (!CG_FadeColor(cg.scoreFadeTime, FADE_TIME)) {
-			// next time scoreboard comes up, don't print killer
-			cg.deferredPlayerLoading = 0;
-			cg.killerName[0] = 0;
-			firstTime = qtrue;
-			return qfalse;
-		}
-	}
-
-	if (menuScoreboard == NULL) {
-		if (cgs.gametype >= GT_TEAM) {
-			menuScoreboard = Menus_FindByName("teamscore_menu");
-		} else {
-			menuScoreboard = Menus_FindByName("score_menu");
-		}
-	}
-
-	if (menuScoreboard) {
-		if (firstTime) {
-			CG_SetScoreSelection(menuScoreboard);
-			firstTime = qfalse;
-		}
-		Menu_Paint(menuScoreboard, qtrue);
-	}
-
-	// load any models that have been deferred
-	if (++cg.deferredPlayerLoading > 10) {
-		CG_LoadDeferredPlayers();
-	}
-
-	return qtrue;
-#else
 	return CG_DrawOldScoreboard();
-#endif
 }
 
 /*

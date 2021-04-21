@@ -3934,9 +3934,6 @@ BotCheckEvents
 void BotCheckEvents(bot_state_t *bs, entityState_t *state) {
 	int event;
 	char buf[128];
-#ifdef MISSIONPACK
-	aas_entityinfo_t entinfo;
-#endif
 
 	// NOTE: this sucks, we're accessing the gentity_t directly
 	// but there's no other fast way to do it right now
@@ -3956,33 +3953,6 @@ void BotCheckEvents(bot_state_t *bs, entityState_t *state) {
 		if (bs->ltgtype == LTG_FETCHCART) {
 			// get event location !!!
 			bs->takecart = qtrue;
-
-			/*
-			vec3_t dir;
-			char* items[]={"red Cartridge","blue Cartridge"};
-			bot_goal_t goal;
-			float dist;
-
-			G_Printf("^2 launched ...");	// cyr_ptr
-			VectorSubtract(state->origin, bs->origin, dir);
-			if(VectorLength(dir) >= PUSHCART_DIST ){
-				G_Printf("too far %d :/ \n", VectorLength(dir));	// cyr_ptr
-				//break;	// cyr_ptr
-			}
-			else G_Printf("in range ...");		// cyr_ptr
-
-
-			// push droped cart in item db
-			trap_BotUpdateEntityItems();
-			// identify cart
-			dist = BotNearestVisibleItem(bs, items[BotTeam(bs)-1], &goal );
-			if(dist < 200){
-				bs->takecart = qtrue;
-				memcpy(&goal, &bs->teamgoal, sizeof(bot_goal_t));
-				G_Printf("taking it ! \n");	// cyr_ptr
-			}
-			else G_Printf("not found :/ \n");	// cyr_ptr
-			*/
 		}
 		break;
 	}
@@ -3997,12 +3967,10 @@ void BotCheckEvents(bot_state_t *bs, entityState_t *state) {
 		if (target == bs->client) {
 			bs->botdeathtype = mod;
 			bs->lastkilledby = attacker;
-			//
 			if (target == attacker || target == ENTITYNUM_NONE || target == ENTITYNUM_WORLD)
 				bs->botsuicide = qtrue;
 			else
 				bs->botsuicide = qfalse;
-			//
 			bs->num_deaths++;
 		}
 		// else if this client was killed by the bot
@@ -4010,7 +3978,6 @@ void BotCheckEvents(bot_state_t *bs, entityState_t *state) {
 			bs->enemydeathtype = mod;
 			bs->lastkilledplayer = target;
 			bs->killedenemy_time = FloatTime();
-			//
 			bs->num_kills++;
 		} else if (attacker == bs->enemy && target == attacker) {
 			bs->enemysuicide = qtrue;
@@ -4030,40 +3997,6 @@ void BotCheckEvents(bot_state_t *bs, entityState_t *state) {
 		break;
 	}
 	case EV_GLOBAL_TEAM_SOUND: {
-		/*if (gametype == GT_CTF) {
-			switch(state->eventParm) {
-				case GTS_RED_CAPTURE:
-					bs->blueflagstatus = 0;
-					bs->redflagstatus = 0;
-					//bs->flagstatuschanged = qtrue;
-					break; //see BotMatch_CTF
-				case GTS_BLUE_CAPTURE:
-					bs->blueflagstatus = 0;
-					bs->redflagstatus = 0;
-					//bs->flagstatuschanged = qtrue;
-					break; //see BotMatch_CTF
-				case GTS_RED_RETURN:
-					//blue flag is returned
-					bs->blueflagstatus = 0;
-					//bs->flagstatuschanged = qtrue;
-					break;
-				case GTS_BLUE_RETURN:
-					//red flag is returned
-					bs->redflagstatus = 0;
-					//bs->flagstatuschanged = qtrue;
-					break;
-				case GTS_RED_TAKEN:
-					//blue flag is taken
-					bs->blueflagstatus = 1;
-					//bs->flagstatuschanged = qtrue;
-					break; //see BotMatch_CTF
-				case GTS_BLUE_TAKEN:
-					//red flag is taken
-					bs->redflagstatus = 1;
-					//bs->flagstatuschanged = qtrue;
-					break; //see BotMatch_CTF
-			}
-		}*/
 		break;
 	}
 	case EV_PLAYER_TELEPORT_IN: {
@@ -4148,20 +4081,12 @@ void BotCheckSnapshot(bot_state_t *bs) {
 		BotCheckEvents(bs, &state);
 		// check for grenades the bot should avoid
 		BotCheckForGrenades(bs, &state);
-		//
-#ifdef MISSIONPACK
-		// check for proximity mines which the bot should deactivate
-		BotCheckForProxMines(bs, &state);
-		// check for dead bodies with the kamikaze effect which should be gibbed
-		BotCheckForKamikazeBody(bs, &state);
-#endif
 	}
 	// check the player state for events
 	BotAI_GetEntityState(bs->client, &state);
 	// copy the player state events to the entity state
 	state.event = bs->cur_ps.externalEvent;
 	state.eventParm = bs->cur_ps.externalEventParm;
-	//
 	BotCheckEvents(bs, &state);
 }
 
