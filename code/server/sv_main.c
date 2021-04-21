@@ -102,38 +102,6 @@ static char *SV_ExpandNewlines(char *in) {
 
 /*
 ======================
-SV_ReplacePendingServerCommands
-
-FIXME: This is ugly
-======================
-*/
-#if 0 // unused
-static int SV_ReplacePendingServerCommands( client_t *client, const char *cmd ) {
-	int i, index, csnum1, csnum2;
-
-	for ( i = client->reliableSent+1; i <= client->reliableSequence; i++ ) {
-		index = i & ( MAX_RELIABLE_COMMANDS - 1 );
-		//
-		if ( !Q_strncmp(cmd, client->reliableCommands[ index ], strlen("cs")) ) {
-			sscanf(cmd, "cs %i", &csnum1);
-			sscanf(client->reliableCommands[ index ], "cs %i", &csnum2);
-			if ( csnum1 == csnum2 ) {
-				Q_strncpyz( client->reliableCommands[ index ], cmd, sizeof( client->reliableCommands[ index ] ) );
-				/*
-				if ( client->netchan.remoteAddress.type != NA_BOT ) {
-					Com_Printf( "WARNING: client %i removed double pending config string %i: %s\n", client-svs.clients, csnum1, cmd );
-				}
-				*/
-				return qtrue;
-			}
-		}
-	}
-	return qfalse;
-}
-#endif
-
-/*
-======================
 SV_AddServerCommand
 
 The given command will be transmitted to the client, and is guaranteed to
@@ -233,8 +201,8 @@ changes from empty to non-empty, and full to non-full,
 but not on every player enter or exit.
 ================
 */
-#define HEARTBEAT_MSEC 300 * 1000
-#define MASTERDNS_MSEC 24 * 60 * 60 * 1000
+#define HEARTBEAT_MSEC (300 * 1000)
+#define MASTERDNS_MSEC (24 * 60 * 60 * 1000)
 void SV_MasterHeartbeat(const char *message) {
 	static netadr_t adr[MAX_MASTER_SERVERS][2]; // [2] for v4 and v6 address for the same address string.
 	int i;
