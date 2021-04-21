@@ -869,7 +869,7 @@ void Q_strcat(char *dest, int size, const char *src) {
 /*
  * Find the first occurrence of find in s.
  */
-const char *Q_stristr(const char *s, const char *find) {
+char *Q_stristr(char *s, const char *find) {
 	char c, sc;
 	size_t len;
 
