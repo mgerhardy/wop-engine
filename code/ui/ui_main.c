@@ -2894,6 +2894,8 @@ static void UI_LoadMovies( void ) {
 	int		i, len;
 
 	uiInfo.movieCount = trap_FS_GetFileList( "video", "roq", movielist, 4096 );
+	len = strlen(movielist);
+	uiInfo.movieCount += trap_FS_GetFileList( "video", "ogm", movielist + len, 4096 - len );
 
 	if (uiInfo.movieCount) {
 		if (uiInfo.movieCount > MAX_MOVIES) {
@@ -2903,6 +2905,8 @@ static void UI_LoadMovies( void ) {
 		for ( i = 0; i < uiInfo.movieCount; i++ ) {
 			len = strlen( moviename );
 			if (!Q_stricmp(moviename +  len - 4,".roq")) {
+				moviename[len-4] = '\0';
+			} else if (!Q_stricmp(moviename +  len - 4,".ogm")) {
 				moviename[len-4] = '\0';
 			}
 			Q_strupr(moviename);
