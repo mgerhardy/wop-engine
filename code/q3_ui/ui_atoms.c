@@ -402,7 +402,7 @@ static void UI_DrawBannerString2(int x, int y, const char *str, vec4_t color) {
 
 void UI_DrawBannerString(int x, int y, const char *str, int style, vec4_t color) {
 	const char *s;
-	int ch;
+	char ch;
 	int width;
 	vec4_t drawcolor;
 
@@ -562,19 +562,6 @@ void UI_DrawProportionalString(int x, int y, const char *str, int style, vec4_t 
 	}
 
 	if (style & UI_PULSE) {
-		/*(original)
-				drawcolor[0] = color[0] * 0.7;
-				drawcolor[1] = color[1] * 0.7;
-				drawcolor[2] = color[2] * 0.7;
-				drawcolor[3] = color[3];
-				UI_DrawProportionalString2( x, y, str, color, sizeScale, uis.charsetProp );
-
-				drawcolor[0] = color[0];
-				drawcolor[1] = color[1];
-				drawcolor[2] = color[2];
-				drawcolor[3] = 0.5 + 0.5 * sin( uis.realtime / PULSE_DIVISOR );
-				UI_DrawProportionalString2( x, y, str, drawcolor, sizeScale, uis.charsetPropGlow );
-		*/
 		UI_DrawProportionalString2(x, y, str, color, sizeScale, uis.charsetProp);
 		drawcolor[0] = color[0];
 		drawcolor[1] = color[1];
@@ -593,7 +580,7 @@ int CharWidthForStringStyle(int style) {
 	if (style & UI_SMALLFONT)
 		return SMALLCHAR_WIDTH;
 
-	else if (style & UI_GIANTFONT)
+	if (style & UI_GIANTFONT)
 		return GIANTCHAR_WIDTH;
 
 	return BIGCHAR_WIDTH;
@@ -603,7 +590,7 @@ int CharHeightForStringStyle(int style) {
 	if (style & UI_SMALLFONT)
 		return SMALLCHAR_HEIGHT;
 
-	else if (style & UI_GIANTFONT)
+	if (style & UI_GIANTFONT)
 		return GIANTCHAR_HEIGHT;
 
 	return BIGCHAR_HEIGHT;
@@ -970,20 +957,6 @@ qboolean UI_IsFullscreen(void) {
 	return qfalse;
 }
 
-#if 0
-static void NeedCDAction( qboolean result ) {
-	if ( !result ) {
-		trap_Cmd_ExecuteText( EXEC_APPEND, "quit\n" );
-	}
-}
-
-static void NeedCDKeyAction( qboolean result ) {
-	if ( !result ) {
-		trap_Cmd_ExecuteText( EXEC_APPEND, "quit\n" );
-	}
-}
-#endif
-
 void UI_SetActiveMenu(uiMenuCommand_t menu) {
 	// this should be the ONLY way the menu system is brought up
 	// ensure minimum menu data is cached
@@ -1318,7 +1291,7 @@ void UI_Init(void) {
 		trap_Cvar_Set("s_wop_restarted", "1");
 		// erstmal rausgenommen fuer WoP-Engine
 		//		trap_Cmd_ExecuteText( EXEC_NOW, "snd_restart\n" );//noch testen ob das nicht zu radikal ist, auch da
-		//return! ... old: EXEC_APPEND 		return;
+		// return! ... old: EXEC_APPEND 		return;
 	}
 
 	MusicMenu_Init();
@@ -1509,7 +1482,7 @@ void UI_DrawMenu(menuframework_s *menu) {
 			}
 		} else if (menu->fullscreen) {
 			// draw the background
-			// schwarzer Hintergrund für nicht 4/3-Auflösungen
+			// black background for non 4:3 resolutions
 			trap_R_SetColor(colorBlack);
 			trap_R_DrawStretchPic(0, 0, uis.glconfig.vidWidth, uis.glconfig.vidHeight, 0, 0, 0, 0, uis.whiteShader);
 			trap_R_SetColor(NULL);
@@ -1680,9 +1653,9 @@ static int GetBotListSpecialScore(const char *name) {
 		return 2;
 	else if (!Q_stricmp(name, "fatpad"))
 		return 1;
-	else
-		return 0;
+	return 0;
 }
+
 int QDECL BotListCompare(const void *arg1, const void *arg2) {
 	int num1, num2;
 	const char *info1, *info2;

@@ -347,13 +347,13 @@ double I_FloatTime(void) {
 	static int		secbase;
 
 	gettimeofday(&tp, &tzp);
-	
+
 	if (!secbase)
 	{
 		secbase = tp.tv_sec;
 		return tp.tv_usec/1000000.0;
 	}
-	
+
 	return (tp.tv_sec - secbase) + tp.tv_usec/1000000.0;
 #endif
 }
@@ -414,7 +414,7 @@ Parse a token out of a string
 ==============
 */
 char *COM_Parse(char *data) {
-	int c;
+	char c;
 	int len;
 
 	len = 0;
@@ -477,7 +477,7 @@ skipwhite:
 }
 
 int Q_strncasecmp(const char *s1, const char *s2, int n) {
-	int c1, c2;
+	char c1, c2;
 
 	do {
 		c1 = *s1++;
