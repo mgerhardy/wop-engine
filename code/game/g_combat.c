@@ -248,15 +248,15 @@ GibEntity
 */
 void GibEntity(gentity_t *self, int killer) {
 	return; // we don't want any gib-stuff
-	/*
-		gentity_t *ent;
-		int i;
+			/*
+				gentity_t *ent;
+				int i;
 
-		G_AddEvent( self, EV_GIB_PLAYER, killer );
-		self->takedamage = qfalse;
-		self->s.eType = ET_INVISIBLE;
-		self->r.contents = 0;
-	*/
+				G_AddEvent( self, EV_GIB_PLAYER, killer );
+				self->takedamage = qfalse;
+				self->s.eType = ET_INVISIBLE;
+				self->r.contents = 0;
+			*/
 }
 
 /*
@@ -369,7 +369,7 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 	int contents;
 	int killer;
 	int i;
-	char *killerName, *obit;
+	char *obit;
 
 	if (self->client->ps.pm_type == PM_DEAD) {
 		return;
@@ -387,30 +387,16 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 	if (self->client && self->client->hook) {
 		Weapon_HookFree(self->client->hook);
 	}
-#ifdef MISSIONPACK
-	if ((self->client->ps.eFlags & EF_TICKING) && self->activator) {
-		self->client->ps.eFlags &= ~EF_TICKING;
-		self->activator->think = G_FreeEntity;
-		self->activator->nextthink = level.time;
-	}
-#endif
 	self->client->ps.pm_type = PM_DEAD;
 
 	if (attacker) {
 		killer = attacker->s.number;
-		if (attacker->client) {
-			killerName = attacker->client->pers.netname;
-		} else {
-			killerName = "<non-client>";
-		}
 	} else {
 		killer = ENTITYNUM_WORLD;
-		killerName = "<world>";
 	}
 
 	if (killer < 0 || killer >= MAX_CLIENTS) {
 		killer = ENTITYNUM_WORLD;
-		killerName = "<world>";
 	}
 
 	if (meansOfDeath < 0 || meansOfDeath >= ARRAY_LEN(modNames)) {
@@ -603,12 +589,6 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 
 		// globally cycle through the different death animations
 		i = (i + 1) % 3;
-
-#ifdef MISSIONPACK
-		if (self->s.eFlags & EF_KAMIKAZE) {
-			Kamikaze_DeathTimer(self);
-		}
-#endif
 	}
 
 	trap_LinkEntity(self);
@@ -706,7 +686,6 @@ dflags		these flags are used to control how T_Damage works
 	DAMAGE_NO_PROTECTION	kills godmode, armor, everything
 ============
 */
-
 void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t dir, vec3_t point, int damage,
 			  int dflags, int mod) {
 	gclient_t *client;
@@ -714,9 +693,6 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 	int asave;
 	int knockback;
 	int max;
-#ifdef MISSIONPACK
-	vec3_t bouncedir, impactpoint;
-#endif
 
 	if (!targ->takedamage) {
 		return;
@@ -760,20 +736,10 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 		}
 		return;
 	}
-#ifdef MISSIONPACK
-	if (g_gametype.integer == GT_OBELISK && CheckObeliskAttack(targ, attacker)) {
-		return;
-	}
-#endif
 	// reduce damage by the attacker's handicap value
 	// unless they are rocket jumping
 	if (attacker->client && attacker != targ) {
 		max = attacker->client->ps.stats[STAT_MAX_HEALTH];
-#ifdef MISSIONPACK
-		if (bg_itemlist[attacker->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD) {
-			max /= 2;
-		}
-#endif
 		damage = damage * max / 100;
 	}
 
@@ -864,16 +830,6 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 				return;
 			}
 		}
-#ifdef MISSIONPACK
-		if (mod == MOD_PROXIMITY_MINE) {
-			if (inflictor && inflictor->parent && OnSameTeam(targ, inflictor->parent)) {
-				return;
-			}
-			if (targ == attacker) {
-				return;
-			}
-		}
-#endif
 
 		// check for godmode
 		if (targ->flags & FL_GODMODE) {
@@ -905,7 +861,7 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 	// always give half damage if hurting self
 	// calculated after knockback, so rocket jumping works
 	if (targ == attacker) {
-		damage *= 0.5;
+		damage *= 0.5f;
 	}
 
 	if (damage < 1) {
@@ -951,11 +907,7 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 	}
 
 	// See if it's the player hurting the emeny flag carrier
-#ifdef MISSIONPACK
-	if (g_gametype.integer == GT_CTF || g_gametype.integer == GT_1FCTF) {
-#else
 	if (g_gametype.integer == GT_CTF) {
-#endif
 		Team_CheckHurtCarrier(targ, attacker);
 	}
 

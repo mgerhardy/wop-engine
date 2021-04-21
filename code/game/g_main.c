@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 
 #include "g_local.h"
 #include "wopg_sphandling.h"
@@ -362,16 +361,11 @@ G_RegisterCvars
 void G_RegisterCvars(void) {
 	int i;
 	cvarTable_t *cv;
-	qboolean remapped = qfalse;
 
 	for (i = 0, cv = gameCvarTable; i < gameCvarTableSize; i++, cv++) {
 		trap_Cvar_Register(cv->vmCvar, cv->cvarName, cv->defaultString, cv->cvarFlags);
 		if (cv->vmCvar)
 			cv->modificationCount = cv->vmCvar->modificationCount;
-
-		if (cv->teamShader) {
-			remapped = qtrue;
-		}
 	}
 
 	// check some things
@@ -391,25 +385,21 @@ G_UpdateCvars
 void G_UpdateCvars(void) {
 	int i;
 	cvarTable_t *cv;
-	qboolean remapped = qfalse;
 
 	for (i = 0, cv = gameCvarTable; i < gameCvarTableSize; i++, cv++) {
-		if (cv->vmCvar) {
-			trap_Cvar_Update(cv->vmCvar);
+		if (!cv->vmCvar) {
+			continue;
+		}
+		trap_Cvar_Update(cv->vmCvar);
 
-			if (cv->modificationCount != cv->vmCvar->modificationCount) {
-				cv->modificationCount = cv->vmCvar->modificationCount;
+		if (cv->modificationCount != cv->vmCvar->modificationCount) {
+			cv->modificationCount = cv->vmCvar->modificationCount;
 
-				if (cv->trackChange) {
-					// FIXME: This will display the current value instead of the latched one
-					trap_SendServerCommand(
-						-1, va("print \"Server: %s changed to %s\n\"", cv->cvarName, cv->vmCvar->string));
-					G_LogPrintf("CvarChange: %s %s\n", cv->cvarName, cv->vmCvar->string);
-				}
-
-				if (cv->teamShader) {
-					remapped = qtrue;
-				}
+			if (cv->trackChange) {
+				// FIXME: This will display the current value instead of the latched one
+				trap_SendServerCommand(-1,
+									   va("print \"Server: %s changed to %s\n\"", cv->cvarName, cv->vmCvar->string));
+				G_LogPrintf("CvarChange: %s %s\n", cv->cvarName, cv->vmCvar->string);
 			}
 		}
 	}
@@ -1293,10 +1283,6 @@ Append information about this game to the log file
 void LogExit(const char *string) {
 	int i, numSorted;
 	gclient_t *cl;
-#ifdef MISSIONPACK
-	qboolean won = qtrue;
-	team_t team = TEAM_RED;
-#endif
 	G_LogPrintf("Exit: %s\n", string);
 
 	level.intermissionQueued = level.time;
@@ -1316,19 +1302,13 @@ void LogExit(const char *string) {
 	}
 
 	for (i = 0; i < numSorted; i++) {
-		int ping;
-
 		cl = &level.clients[level.sortedClients[i]];
-
 		if (cl->sess.sessionTeam == TEAM_SPECTATOR) {
 			continue;
 		}
 		if (cl->pers.connected == CON_CONNECTING) {
 			continue;
 		}
-
-		ping = cl->ps.ping < 999 ? cl->ps.ping : 999;
-
 		G_LogPrintf("Score: %i %i\n", level.sortedClients[i], cl->ps.persistant[PERS_SCORE]);
 	}
 }

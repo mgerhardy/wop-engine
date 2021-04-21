@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 
 #include "g_local.h"
 
@@ -1201,14 +1200,11 @@ while a slow client may have multiple ClientEndFrame between ClientThink.
 */
 void ClientEndFrame(gentity_t *ent) {
 	int i;
-	clientPersistant_t *pers;
 
 	if ((ent->client->sess.sessionTeam == TEAM_SPECTATOR) || LPSDeadSpec(ent->client)) {
 		SpectatorClientEndFrame(ent);
 		return;
 	}
-
-	pers = &ent->client->pers;
 
 	// turn off any expired powerups
 	for (i = 0; i < MAX_POWERUPS; i++) {
@@ -1216,33 +1212,6 @@ void ClientEndFrame(gentity_t *ent) {
 			ent->client->ps.powerups[i] = 0;
 		}
 	}
-
-#ifdef MISSIONPACK
-	// set powerup for player animation
-	if (bg_itemlist[ent->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD) {
-		ent->client->ps.powerups[PW_GUARD] = level.time;
-	}
-	if (bg_itemlist[ent->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT) {
-		ent->client->ps.powerups[PW_SCOUT] = level.time;
-	}
-	if (bg_itemlist[ent->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_DOUBLER) {
-		ent->client->ps.powerups[PW_DOUBLER] = level.time;
-	}
-	if (bg_itemlist[ent->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_AMMOREGEN) {
-		ent->client->ps.powerups[PW_AMMOREGEN] = level.time;
-	}
-	if (ent->client->invulnerabilityTime > level.time) {
-		ent->client->ps.powerups[PW_INVULNERABILITY] = level.time;
-	}
-#endif
-
-	// save network bandwidth
-#if 0
-	if ( !g_synchronousClients->integer && ent->client->ps.pm_type == PM_NORMAL ) {
-		// FIXME: this must change eventually for non-sync demo recording
-		VectorClear( ent->client->ps.viewangles );
-	}
-#endif
 
 	//
 	// If the end of unit layout is displayed, don't give
@@ -1276,8 +1245,4 @@ void ClientEndFrame(gentity_t *ent) {
 		BG_PlayerStateToEntityState(&ent->client->ps, &ent->s, qtrue);
 	}
 	SendPendingPredictableEvents(&ent->client->ps);
-
-	// set the bit for the reachability area the client is currently in
-	//	i = trap_AAS_PointReachabilityAreaIndex( ent->client->ps.origin );
-	//	ent->client->areabits[i >> 3] |= 1 << (i & 7);
 }
