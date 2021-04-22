@@ -53,13 +53,13 @@ int Instagib_calculateDamage(gentity_t *target, gentity_t *inflictor, gentity_t 
 	if (attacker == target)
 		return damage;
 
-	else if (mod == MOD_TRIGGER_HURT || mod == MOD_WATER || mod == MOD_SLIME || mod == MOD_LAVA)
+	if (mod == MOD_TRIGGER_HURT || mod == MOD_WATER || mod == MOD_SLIME || mod == MOD_LAVA)
 		return damage;
 
-	else if (dflags == DAMAGE_RADIUS && attacker->client)
+	if (dflags == DAMAGE_RADIUS && attacker->client)
 		return 0; // no splash damage from players -- might change later ;)
-	else
-		return INSTAGIB_DAMAGE;
+
+	return INSTAGIB_DAMAGE;
 }
 
 /**
