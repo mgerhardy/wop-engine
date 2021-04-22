@@ -80,30 +80,30 @@ typedef struct {
 	fieldtype_t type;
 } field_t;
 
-field_t fields[] = {{"classname", FOFS(classname), F_STRING},
-					{"origin", FOFS(s.origin), F_VECTOR},
-					{"model", FOFS(model), F_STRING},
-					{"model2", FOFS(model2), F_STRING},
-					{"spawnflags", FOFS(spawnflags), F_INT},
-					{"speed", FOFS(speed), F_FLOAT},
-					{"target", FOFS(target), F_STRING},
-					{"targetname", FOFS(targetname), F_STRING},
-					{"message", FOFS(message), F_STRING},
-					{"team", FOFS(team), F_STRING},
-					{"wait", FOFS(wait), F_FLOAT},
-					{"random", FOFS(random), F_FLOAT},
-					{"count", FOFS(count), F_INT},
-					{"health", FOFS(health), F_INT},
-					{"dmg", FOFS(damage), F_INT},
-					{"angles", FOFS(s.angles), F_VECTOR},
-					{"angle", FOFS(s.angles), F_ANGLEHACK},
-					{"targetShaderName", FOFS(targetShaderName), F_STRING},
-					{"targetShaderNewName", FOFS(targetShaderNewName), F_STRING},
-					{"animationStart", FOFS(animationStart), F_INT},
-					{"animationEnd", FOFS(animationEnd), F_INT},
-					{"animationFPS", FOFS(animationFPS), F_FLOAT},
-					{"distance", FOFS(distance), F_FLOAT},
-					{NULL}};
+static const field_t fields[] = {{"classname", FOFS(classname), F_STRING},
+								 {"origin", FOFS(s.origin), F_VECTOR},
+								 {"model", FOFS(model), F_STRING},
+								 {"model2", FOFS(model2), F_STRING},
+								 {"spawnflags", FOFS(spawnflags), F_INT},
+								 {"speed", FOFS(speed), F_FLOAT},
+								 {"target", FOFS(target), F_STRING},
+								 {"targetname", FOFS(targetname), F_STRING},
+								 {"message", FOFS(message), F_STRING},
+								 {"team", FOFS(team), F_STRING},
+								 {"wait", FOFS(wait), F_FLOAT},
+								 {"random", FOFS(random), F_FLOAT},
+								 {"count", FOFS(count), F_INT},
+								 {"health", FOFS(health), F_INT},
+								 {"dmg", FOFS(damage), F_INT},
+								 {"angles", FOFS(s.angles), F_VECTOR},
+								 {"angle", FOFS(s.angles), F_ANGLEHACK},
+								 {"targetShaderName", FOFS(targetShaderName), F_STRING},
+								 {"targetShaderNewName", FOFS(targetShaderNewName), F_STRING},
+								 {"animationStart", FOFS(animationStart), F_INT},
+								 {"animationEnd", FOFS(animationEnd), F_INT},
+								 {"animationFPS", FOFS(animationFPS), F_FLOAT},
+								 {"distance", FOFS(distance), F_FLOAT},
+								 {NULL}};
 
 typedef struct {
 	char *name;
@@ -182,7 +182,7 @@ void SP_item_botroam(gentity_t *ent) {
 	//	int i;
 }
 
-spawn_t spawns[] = {
+static const spawn_t spawns[] = {
 	// info entities don't do anything at all, but provide positional
 	// information for things controlled by other processes
 	{"info_player_start", SP_info_player_start},
@@ -277,7 +277,7 @@ returning qfalse if not found
 ===============
 */
 qboolean G_CallSpawn(gentity_t *ent) {
-	spawn_t *s;
+	const spawn_t *s;
 	gitem_t *item;
 
 	if (!ent->classname) {
@@ -349,7 +349,7 @@ in a gentity
 ===============
 */
 void G_ParseField(const char *key, const char *value, gentity_t *ent) {
-	field_t *f;
+	const field_t *f;
 	byte *b;
 	float v;
 	vec3_t vec;
@@ -427,13 +427,12 @@ static const replacePair_t q3ToWopItems[] = {{"weapon_gauntlet", "weapon_punchy"
 											 {"team_CTF_bluespawn", "team_bluespawn"},
 											 {NULL, NULL}};
 
-static const replacePair_t shortMarkernames[] = {
-	{"black", "models/mapobjects/pad_weaponmarker/pad_wepm_black_bg"},
-	{"blue", "models/mapobjects/pad_weaponmarker/pad_wepm_blue_bg"},
-	{"green", "models/mapobjects/pad_weaponmarker/pad_wepm_green_gg"},
-	{"purple", "models/mapobjects/pad_weaponmarker/pad_wepm_green_bg"},
-	{"orange", "models/mapobjects/pad_weaponmarker/pad_wepm_orange_bg"},
-	{NULL, NULL}};
+static const replacePair_t shortMarkernames[] = {{"black", "models/mapobjects/pad_weaponmarker/pad_wepm_black_bg"},
+												 {"blue", "models/mapobjects/pad_weaponmarker/pad_wepm_blue_bg"},
+												 {"green", "models/mapobjects/pad_weaponmarker/pad_wepm_green_gg"},
+												 {"purple", "models/mapobjects/pad_weaponmarker/pad_wepm_green_bg"},
+												 {"orange", "models/mapobjects/pad_weaponmarker/pad_wepm_orange_bg"},
+												 {NULL, NULL}};
 
 static const replacePair_t spawnpointReplacements[] = {{"team_redplayer", "info_player_deathmatch"},
 													   {"team_blueplayer", "info_player_deathmatch"},
