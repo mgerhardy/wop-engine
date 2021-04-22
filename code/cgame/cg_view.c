@@ -165,8 +165,6 @@ static void CG_AddTestModel(void) {
 	trap_R_AddRefEntityToScene(&cg.testModelEntity);
 }
 
-//============================================================================
-
 /*
 =================
 CG_CalcVrect
@@ -193,8 +191,6 @@ static void CG_CalcVrect(void) {
 	cg.refdef.x = (cgs.glconfig.vidWidth - cg.refdef.width) / 2;
 	cg.refdef.y = (cgs.glconfig.vidHeight - cg.refdef.height) / 2;
 }
-
-//==============================================================================
 
 /*
 ===============
@@ -344,14 +340,6 @@ static void CG_OffsetFirstPersonView(void) {
 		}
 	}
 
-	// add pitch based on fall kick
-#if 0
-	ratio = ( cg.time - cg.landTime) / FALL_TIME;
-	if (ratio < 0)
-		ratio = 0;
-	angles[PITCH] += ratio * cg.fall_value;
-#endif
-
 	// add angles based on velocity
 	VectorCopy(cg.predictedPlayerState.velocity, predictedVelocity);
 
@@ -376,8 +364,6 @@ static void CG_OffsetFirstPersonView(void) {
 	if (cg.bobcycle & 1)
 		delta = -delta;
 	angles[ROLL] += delta;
-
-	//===================================
 
 	// add view height
 	origin[2] += cg.predictedPlayerState.viewheight;
@@ -409,25 +395,9 @@ static void CG_OffsetFirstPersonView(void) {
 
 	// add step offset
 	CG_StepOffset();
-
-	// pivot the eye based on a neck length
-#if 0
-	{
-#define NECK_LENGTH 8
-	vec3_t			forward, up;
-
-	cg.refdef.vieworg[2] -= NECK_LENGTH;
-	AngleVectors( cg.refdefViewAngles, forward, NULL, up );
-	VectorMA( cg.refdef.vieworg, 3, forward, cg.refdef.vieworg );
-	VectorMA( cg.refdef.vieworg, NECK_LENGTH, up, cg.refdef.vieworg );
-	}
-#endif
 }
 
-//======================================================================
-
 void CG_ZoomDown_f(void) {
-
 	if (cg.snap == NULL)
 		return;
 
@@ -618,58 +588,6 @@ static int CG_CalcFov(void) {
 
 /*
 ===============
-CG_DamageBlendBlob
-
-===============
-*/
-static void CG_DamageBlendBlob(void) {
-	return;
-
-	/*
-		int			t;
-		int			maxTime;
-		refEntity_t		ent;
-
-		if ( !cg.damageValue ) {
-			return;
-		}
-
-		//if (cg.cameraMode) {
-		//	return;
-		//}
-
-		// ragePro systems can't fade blends, so don't obscure the screen
-		if ( cgs.glconfig.hardwareType == GLHW_RAGEPRO ) {
-			return;
-		}
-
-		maxTime = DAMAGE_TIME;
-		t = cg.time - cg.damageTime;
-		if ( t <= 0 || t >= maxTime ) {
-			return;
-		}
-
-
-		memset( &ent, 0, sizeof( ent ) );
-		ent.reType = RT_SPRITE;
-		ent.renderfx = RF_FIRST_PERSON;
-
-		VectorMA( cg.refdef.vieworg, 8, cg.refdef.viewaxis[0], ent.origin );
-		VectorMA( ent.origin, cg.damageX * -8, cg.refdef.viewaxis[1], ent.origin );
-		VectorMA( ent.origin, cg.damageY * 8, cg.refdef.viewaxis[2], ent.origin );
-
-		ent.radius = cg.damageValue * 3;
-		ent.customShader = cgs.media.viewBloodShader;
-		ent.shaderRGBA[0] = 255;
-		ent.shaderRGBA[1] = 255;
-		ent.shaderRGBA[2] = 255;
-		ent.shaderRGBA[3] = 200 * ( 1.0 - ((float)t / maxTime) );
-		trap_R_AddRefEntityToScene( &ent );
-	*/
-}
-
-/*
-===============
 CG_CalcViewValues
 
 Sets cg.refdef view values
@@ -680,28 +598,10 @@ static int CG_CalcViewValues(void) {
 
 	memset(&cg.refdef, 0, sizeof(cg.refdef));
 
-	// strings for in game rendering
-	// Q_strncpyz( cg.refdef.text[0], "Park Ranger", sizeof(cg.refdef.text[0]) );
-	// Q_strncpyz( cg.refdef.text[1], "19", sizeof(cg.refdef.text[1]) );
-
 	// calculate size of 3D view
 	CG_CalcVrect();
 
 	ps = &cg.predictedPlayerState;
-	/*
-		if (cg.cameraMode) {
-			vec3_t origin, angles;
-			if (trap_getCameraInfo(cg.time, &origin, &angles)) {
-				VectorCopy(origin, cg.refdef.vieworg);
-				angles[ROLL] = 0;
-				VectorCopy(angles, cg.refdefViewAngles);
-				AnglesToAxis( cg.refdefViewAngles, cg.refdef.viewaxis );
-				return CG_CalcFov();
-			} else {
-				cg.cameraMode = qfalse;
-			}
-		}
-	*/
 	if (cg.Cam) {
 		float fov = cg_fov.value;
 		float x;
@@ -829,8 +729,6 @@ static void CG_PlayBufferedSounds(void) {
 	}
 }
 
-//=========================================================================
-
 /*
 =================
 CG_DrawActiveFrame
@@ -863,8 +761,7 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 	}
 
 	if (!(cg.clientFrame & 0xff))
-		trap_SendConsoleCommand(
-			"wop_checkmusic\n"); // noch überdenken ob ich es nicht doch nur alle paar frames machen sollte
+		trap_SendConsoleCommand("wop_checkmusic\n"); // maybe we shouldn't do this in every frame
 
 	// any looped sounds will be respecified as entities
 	// are added to the render list
@@ -897,7 +794,7 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 	// this counter will be bumped for every valid scene we generate
 	cg.clientFrame++;
 
-	if (cg.clientFrame == 1) // oder doch lieber ein späterer
+	if (cg.clientFrame == 1) // or maybe even a later frame
 	{
 		qtime_t qtime;
 
@@ -1069,11 +966,6 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 		cg.refdef.rdflags |= RDF_NOWORLDMODEL;
 		trap_R_RenderScene(&cg.refdef);
 		cg.refdef.rdflags &= ~RDF_NOWORLDMODEL;
-	}
-
-	// first person blend blobs, done after AnglesToAxis
-	if (!cg.renderingThirdPerson) {
-		CG_DamageBlendBlob();
 	}
 
 	// build the render lists
