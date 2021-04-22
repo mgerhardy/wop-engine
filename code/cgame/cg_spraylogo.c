@@ -51,7 +51,7 @@ static logoPoly_t logoPolys[MAX_LOGO_POLYS];
 // cvar:"logolist"
 // vv INIT-stuff vv
 
-int PP2ID(logoPoly_t *p) {
+static int PP2ID(logoPoly_t *p) {
 	return (p) ? p - logoPolys : -1;
 }
 
@@ -95,7 +95,7 @@ Init_LogoPolyList
 This will clean all logopolys and put them into the freelist
 #######################
 */
-void Init_LogoPolyList(void) {
+static void Init_LogoPolyList(void) {
 	int i;
 
 	// clean =)
@@ -120,7 +120,7 @@ Sort_Logos
 This will sort the Logo list (using some Q-Sort code)
 #######################
 */
-void Sort_Logos(loadedlogo_t arr[], int lidx, int ridx) {
+static void Sort_Logos(loadedlogo_t arr[], int lidx, int ridx) {
 	loadedlogo_t buffer;
 	int e, k, mid;
 
@@ -158,7 +158,7 @@ Load_Logos
 This function loads all logos which were found with the ui-function(ui_gameinfo.c)
 #######################
 */
-void Load_Logos(void) {
+static void Load_Logos(void) {
 	int i, logosfound;
 	char *logonamelist[MAX_LOADEDLOGOS];
 	char logonamestr[1024];
@@ -238,7 +238,7 @@ Free_LogoPoly
 TODO: write some info ;)
 #######################
 */
-void Free_LogoPoly(logoPoly_t *lp) {
+static void Free_LogoPoly(logoPoly_t *lp) {
 	if (!lp) {
 		Com_Printf("^1ERROR: Free_LogoPoly get a NULL pointer\n");
 		return;
@@ -272,7 +272,7 @@ this function can return NULL if there is an big error !!!!! ... this will lead 
 TODO: write some more info ;)
 #######################
 */
-logoPoly_t *Alloc_LogoPoly(void) {
+static logoPoly_t *Alloc_LogoPoly(void) {
 	logoPoly_t *lp;
 
 	if (freeLogoPolys) {
@@ -370,7 +370,7 @@ void Add_LogoToDrawList(const vec3_t origin, vec3_t dir, qhandle_t shader, float
 		axis[2][2] = axis[1][0] * axis[0][1] - axis[1][1] * axis[0][0];
 		VectorNormalize(axis[2]);
 
-		// turn 180° ...
+		// turn 180 degree ...
 		axis[1][0] *= -1.0f;
 		axis[1][1] *= -1.0f;
 		axis[1][2] *= -1.0f;
@@ -451,7 +451,6 @@ void Add_LogoToDrawList(const vec3_t origin, vec3_t dir, qhandle_t shader, float
 	//	for ( i = 0, lf = LogoFragments ; i < numFragments ; i++, lf++ ) {
 	for (i = 0; i < numFragments; i++) {
 		polyVert_t *v;
-		//		polyVert_t	verts[MAX_VERTS_ON_POLY];
 		logoPoly_t *lp;
 
 		lf = &LogoFragments[i];
@@ -469,7 +468,6 @@ void Add_LogoToDrawList(const vec3_t origin, vec3_t dir, qhandle_t shader, float
 		lp->radius = radius;
 		lp->level = level;
 
-		//		for ( j = 0, v = lp->verts; j < lf->numPoints ; j++, v++ ) {
 		for (j = 0; j < lf->numPoints; j++) {
 			vec3_t delta;
 
@@ -508,7 +506,7 @@ TODO: write some info ;)
 #######################
 */
 #define LOGOFADEOUT_DONOTHING 90000 // 180000
-#define LOGOFADEOUT_FINISH 120000	// 240000
+#define LOGOFADEOUT_FINISH 120000 // 240000
 
 void AddLogosToScene(void) {
 	logoPoly_t *lp, *tmplp;
@@ -550,11 +548,10 @@ void AddLogosToScene(void) {
 	// if(tmplp!=lastdrawLogoPolys) Com_Printf("^1last drawn Logo wasn't lastdrawLogoPolys-ptr\n");
 }
 
-qboolean CursorInBox(int x, int y, int w, int h) {
+static qboolean CursorInBox(int x, int y, int w, int h) {
 	if (cgs.cursorX >= x && cgs.cursorX <= x + w && cgs.cursorY >= y && cgs.cursorY <= y + h)
 		return qtrue;
-	else
-		return qfalse;
+	return qfalse;
 }
 /*
 #######################
@@ -566,8 +563,8 @@ TODO: write some info ;)
 #define POSY_FIRSTLINE 100
 #define POSY_SECONDLINE 200 // 260
 
-#define LOGOSIZE 64							   // old: 128
-#define GAP 32								   // old:16
+#define LOGOSIZE 64 // old: 128
+#define GAP 32 // old:16
 #define XLL (320 - GAP * 3 / 2 - 2 * LOGOSIZE) // x left logo XD
 
 #define ARROWY (POSY_SECONDLINE + LOGOSIZE + 40)
@@ -604,11 +601,6 @@ void ActiveChooseLogoMenu(void) {
 		spraycolor = spraycolors[(int)(colorchar[0] - '0')];
 	}
 
-	/*
-		UI_SetColor(spraycolors[(int)(colorchar[0]-'0')]);
-		UI_DrawHandlePic1024(76,464,96,96,uis.logo_handles[s_playersettings.slogo_num]);
-		UI_SetColor(NULL);
-	*/
 	catcher = trap_Key_GetCatcher();
 	if (!(catcher & KEYCATCH_CGAME))
 		trap_Key_SetCatcher(catcher | KEYCATCH_CGAME);
@@ -624,10 +616,6 @@ void ActiveChooseLogoMenu(void) {
 		CG_DrawPic(XLL - GAP - 10, 60 - 10, 640 - 2 * (XLL - GAP) + 20, 320 + 20, cgs.media.chooselogo_bg);
 	}
 
-	//	CG_DrawStringExt(300,40,va("loaded=%i",loadedlogos),colorWhite,qtrue,qfalse,8,16,32);
-
-	//	CG_DrawStringExt(40,POSY_FIRSTLINE-26,"please select a logo ... you can use the
-	//mouse",colorWhite,qtrue,qfalse,8,16,64);
 	CG_DrawStringExt(XLL, POSY_FIRSTLINE - 26, "please select a SprayLogo ...", colorWhite, qtrue, qfalse, 8, 16, 64);
 
 	CursorAtLogo = -1;
@@ -641,8 +629,6 @@ void ActiveChooseLogoMenu(void) {
 		CG_DrawStringExt(XLL + i * (LOGOSIZE + GAP) + 32 - CG_DrawStrlen(loadedlogos_array[j].name) * 4,
 						 POSY_FIRSTLINE + LOGOSIZE + 10, loadedlogos_array[j].name, colorWhite, qtrue, qtrue, 8, 16,
 						 32);
-		//		if((cgs.cursorX>XLL+i*(LOGOSIZE+GAP) && cgs.cursorX<XLL+LOGOSIZE+i*(LOGOSIZE+GAP)) &&
-		//			(cgs.cursorY>POSY_FIRSTLINE && cgs.cursorY<POSY_FIRSTLINE+LOGOSIZE+26))
 		if (CursorInBox(XLL + i * (LOGOSIZE + GAP), POSY_FIRSTLINE, LOGOSIZE, LOGOSIZE + 26))
 			CursorAtLogo = j;
 
@@ -656,13 +642,9 @@ void ActiveChooseLogoMenu(void) {
 		CG_DrawStringExt(XLL + i * (LOGOSIZE + GAP) + 32 - CG_DrawStrlen(loadedlogos_array[(j + 4)].name) * 4,
 						 POSY_SECONDLINE + LOGOSIZE + 10, loadedlogos_array[(j + 4)].name, colorWhite, qtrue, qtrue, 8,
 						 16, 32);
-		//		if((cgs.cursorX>XLL+i*(LOGOSIZE+GAP) && cgs.cursorX<XLL+LOGOSIZE+i*(LOGOSIZE+GAP)) &&
-		//			(cgs.cursorY>POSY_SECONDLINE && cgs.cursorY<POSY_SECONDLINE+LOGOSIZE+26))
 		if (CursorInBox(XLL + i * (LOGOSIZE + GAP), POSY_SECONDLINE, LOGOSIZE, LOGOSIZE + 26))
 			CursorAtLogo = (j + 4);
 	}
-
-	//	CG_DrawStringExt(20,20,va("Cursor@Logo=%i", CursorAtLogo),colorWhite,qtrue,qtrue,8,16,32);
 
 	if (CursorAtLogo != -1)
 		CG_DrawRect(XLL + (CursorAtLogo % 4) * (LOGOSIZE + GAP),
