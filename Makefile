@@ -1824,7 +1824,6 @@ Q3ROBJ = \
   $(B)/renderergl1/tr_image.o \
   $(B)/renderergl1/tr_image_bmp.o \
   $(B)/renderergl1/tr_image_jpg.o \
-  $(B)/renderergl1/tr_image_pcx.o \
   $(B)/renderergl1/tr_image_png.o \
   $(B)/renderergl1/tr_image_tga.o \
   $(B)/renderergl1/tr_init.o \

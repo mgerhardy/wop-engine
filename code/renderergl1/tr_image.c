@@ -828,8 +828,8 @@ typedef struct {
 
 // Note that the ordering indicates the order of preference used
 // when there are multiple images of different formats available
-static imageExtToLoaderMap_t imageLoaders[] = {{"png", R_LoadPNG},	{"tga", R_LoadTGA}, {"jpg", R_LoadJPG},
-											   {"jpeg", R_LoadJPG}, {"pcx", R_LoadPCX}, {"bmp", R_LoadBMP}};
+static imageExtToLoaderMap_t imageLoaders[] = {
+	{"png", R_LoadPNG}, {"tga", R_LoadTGA}, {"jpg", R_LoadJPG}, {"jpeg", R_LoadJPG}, {"bmp", R_LoadBMP}};
 
 static int numImageLoaders = ARRAY_LEN(imageLoaders);
 
