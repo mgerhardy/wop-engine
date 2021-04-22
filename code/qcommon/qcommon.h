@@ -260,15 +260,6 @@ PROTOCOL
 #define MASTER_SERVER_NAME "master.worldofpadman.com" //"master.quake3arena.com"
 #endif
 
-#ifndef STANDALONE
-#ifndef AUTHORIZE_SERVER_NAME
-#define AUTHORIZE_SERVER_NAME "authorize.quake3arena.com"
-#endif
-#ifndef PORT_AUTHORIZE
-#define PORT_AUTHORIZE 27952
-#endif
-#endif
-
 #define PORT_MASTER 27955 // 27950
 #define PORT_UPDATE 27951
 #define PORT_SERVER 27960
@@ -844,7 +835,6 @@ extern cvar_t *com_maxfpsUnfocused;
 extern cvar_t *com_minimized;
 extern cvar_t *com_maxfpsMinimized;
 extern cvar_t *com_altivec;
-extern cvar_t *com_standalone;
 extern cvar_t *com_basegame;
 extern cvar_t *com_homepath;
 

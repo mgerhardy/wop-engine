@@ -358,7 +358,6 @@ static void PlayerModel_BuildList(void) {
 	int j;
 	int dirlen;
 	int filelen;
-	int tgaLength;
 
 	s_playermodel.modelpage = 0;
 	s_playermodel.nummodels = 0;

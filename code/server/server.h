@@ -236,9 +236,6 @@ typedef struct {
 	int nextHeartbeatTime;
 	challenge_t challenges[MAX_CHALLENGES]; // to prevent invalid IPs from connecting
 	netadr_t redirectAddress;				// for rcon return messages
-#ifndef STANDALONE
-	netadr_t authorizeAddress; // authorize server address
-#endif
 	int masterResolveTime[MAX_MASTER_SERVERS]; // next svs.time that server should do dns lookup for master server
 } serverStatic_t;
 
@@ -285,9 +282,6 @@ extern cvar_t *sv_gametype;
 extern cvar_t *sv_pure;
 extern cvar_t *sv_floodProtect;
 extern cvar_t *sv_lanForceRate;
-#ifndef STANDALONE
-extern cvar_t *sv_strictAuth;
-#endif
 extern cvar_t *sv_banFile;
 
 extern serverBan_t serverBans[SERVER_MAXBANS];
@@ -325,7 +319,7 @@ extern leakyBucket_t outboundLeakyBucket;
 qboolean SVC_RateLimit(leakyBucket_t *bucket, int burst, int period);
 qboolean SVC_RateLimitAddress(netadr_t from, int burst, int period);
 
-void SV_FinalMessage(char *message);
+void SV_FinalMessage(const char *message);
 void QDECL SV_SendServerCommand(client_t *cl, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
 
 void SV_AddOperatorCommands(void);

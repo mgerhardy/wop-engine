@@ -19,7 +19,7 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
+
 /*
 =======================================================================
 
@@ -88,12 +88,10 @@ static void Demos_MenuEvent(void *ptr, int event) {
 		break;
 
 	case ID_LEFT:
-		//		ScrollList_Key( &s_demos.list, K_LEFTARROW );	// only !=1 columns
 		ScrollList_Key(&s_demos.list, K_PGUP); // only <=1 columns
 		break;
 
 	case ID_RIGHT:
-		//		ScrollList_Key( &s_demos.list, K_RIGHTARROW );	// only !=1 columns
 		ScrollList_Key(&s_demos.list, K_PGDN); // only <=1 columns
 		break;
 	}
@@ -105,10 +103,6 @@ UI_DemosMenu_Key
 =================
 */
 static sfxHandle_t UI_DemosMenu_Key(int key) {
-	menucommon_s *item;
-
-	item = Menu_ItemAtCursor(&s_demos.menu);
-
 	return Menu_DefaultKey(&s_demos.menu, key);
 }
 

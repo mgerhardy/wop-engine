@@ -545,7 +545,6 @@ static void PlayerSettings_BuildList(void) {
 	int dirlen = 0;
 	int filelen = 0;
 	int tmpskinnum = 0;
-	int tgaLength = 0;
 
 	memset(&ps_playericons, 0, sizeof(ps_playericons));
 
