@@ -50,16 +50,6 @@ extern vmCvar_t ui_ctf_friendly;
 
 extern vmCvar_t ui_arenasFile;
 extern vmCvar_t ui_botsFile;
-extern vmCvar_t ui_spScores1;
-extern vmCvar_t ui_spScores2;
-extern vmCvar_t ui_spScores3;
-extern vmCvar_t ui_spScores4;
-extern vmCvar_t ui_spScores5;
-extern vmCvar_t ui_spAwards;
-extern vmCvar_t ui_spVideos;
-extern vmCvar_t ui_spSkill;
-
-extern vmCvar_t ui_spSelection;
 
 extern vmCvar_t ui_browserMaster;
 extern vmCvar_t ui_browserGameType;
@@ -92,17 +82,12 @@ extern vmCvar_t ui_server14;
 extern vmCvar_t ui_server15;
 extern vmCvar_t ui_server16;
 
-extern vmCvar_t ui_cdkey;
-extern vmCvar_t ui_cdkeychecked;
-
 extern vmCvar_t spraycolor;
 extern vmCvar_t syc_logo;
 extern vmCvar_t s_wop_restarted;
 extern vmCvar_t con_notifytime;
 extern vmCvar_t wop_AutoswitchSongByNextMap;
 extern vmCvar_t wop_AutoBindUnusedKeys;
-
-extern vmCvar_t wop_specialSPLoadingScreen;
 
 //
 // locals
@@ -395,11 +380,6 @@ extern void MainMenu_Cache(void);
 extern void UI_MainMenu(void);
 
 //
-// ui_wopsp.c
-//
-extern void WoPSPMenu_Init(void);
-
-//
 // ui_exit.c
 //
 extern void ExitMenu_Init(void);
@@ -475,24 +455,10 @@ extern void UI_DemosMenu(void);
 extern void Demos_Cache(void);
 
 //
-// ui_cinematics.c
-//
-extern void UI_CinematicsMenu(void);
-extern void UI_CinematicsMenu_f(void);
-extern void UI_CinematicsMenu_Cache(void);
-
-//
 // ui_mods.c
 //
 extern void UI_ModsMenu(void);
 extern void UI_ModsMenu_Cache(void);
-
-//
-// ui_cdkey.c
-//
-extern void UI_CDKeyMenu(void);
-extern void UI_CDKeyMenu_Cache(void);
-extern void UI_CDKeyMenu_f(void);
 
 //
 // ui_password.c
@@ -760,31 +726,6 @@ extern uiStatic_t uis;
 extern int QDECL BotListCompare(const void *arg1, const void *arg2);
 
 //
-// ui_spLevel.c
-//
-void UI_SPLevelMenu_Cache(void);
-void UI_SPLevelMenu(void);
-void UI_SPLevelMenu_f(void);
-void UI_SPLevelMenu_ReInit(void);
-
-//
-// ui_spArena.c
-//
-void UI_SPArena_Start(const char *arenaInfo);
-
-//
-// ui_spPostgame.c
-//
-void UI_SPPostgameMenu_Cache(void);
-void UI_SPPostgameMenu_f(void);
-
-//
-// ui_spSkill.c
-//
-void UI_SPSkillMenu(const char *arenaInfo);
-void UI_SPSkillMenu_Cache(void);
-
-//
 // ui_syscalls.c
 //
 void trap_Print(const char *string);
@@ -889,18 +830,6 @@ extern void UI_TeamOrdersMenu_f(void);
 extern void UI_TeamOrdersMenu_Cache(void);
 
 //
-// ui_loadconfig.c
-//
-void UI_LoadConfig_Cache(void);
-void UI_LoadConfigMenu(void);
-
-//
-// ui_saveconfig.c
-//
-void UI_SaveConfigMenu_Cache(void);
-void UI_SaveConfigMenu(void);
-
-//
 // ui_display.c
 //
 void UI_DisplayOptionsMenu_Cache(void);
@@ -951,15 +880,7 @@ void UI_NewGame(void);
 void UI_LogAwardData(int award, int data);
 int UI_GetAwardLevel(int award);
 
-void UI_SPUnlock_f(void);
-void UI_SPUnlockMedals_f(void);
-
 void UI_InitGameinfo(void);
-
-//
-// ui_mediaview.c
-//
-void LaunchMediaViewMenu(const char *mediaRef, const char *execOnClose);
 
 //
 // wop_advanced2d.c

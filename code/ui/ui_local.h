@@ -342,7 +342,6 @@ extern sfxHandle_t MenuField_Key(menufield_s *m, int *key);
 void UI_Report(void);
 void UI_Load(void);
 void UI_LoadMenus(const char *menuFile, qboolean reset);
-void _UI_SetActiveMenu(uiMenuCommand_t menu);
 int UI_AdjustTimeByGame(int time);
 void UI_ShowPostGame(qboolean newHigh);
 void UI_ClearScores(void);
@@ -404,24 +403,10 @@ extern void UI_DemosMenu(void);
 extern void Demos_Cache(void);
 
 //
-// ui_cinematics.c
-//
-extern void UI_CinematicsMenu(void);
-extern void UI_CinematicsMenu_f(void);
-extern void UI_CinematicsMenu_Cache(void);
-
-//
 // ui_mods.c
 //
 extern void UI_ModsMenu(void);
 extern void UI_ModsMenu_Cache(void);
-
-//
-// ui_cdkey.c
-//
-extern void UI_CDKeyMenu(void);
-extern void UI_CDKeyMenu_Cache(void);
-extern void UI_CDKeyMenu_f(void);
 
 //
 // ui_playermodel.c
@@ -482,10 +467,6 @@ extern void ServerInfo_Cache(void);
 extern void UI_GraphicsOptionsMenu(void);
 extern void GraphicsOptions_Cache(void);
 extern void DriverInfo_Cache(void);
-
-//
-// ui_players.c
-//
 
 // FIXME ripped from cg_local.h
 typedef struct {
@@ -873,31 +854,6 @@ void UI_LoadBestScores(const char *map, int game);
 extern uiStatic_t uis;
 
 //
-// ui_spLevel.c
-//
-void UI_SPLevelMenu_Cache(void);
-void UI_SPLevelMenu(void);
-void UI_SPLevelMenu_f(void);
-void UI_SPLevelMenu_ReInit(void);
-
-//
-// ui_spArena.c
-//
-void UI_SPArena_Start(const char *arenaInfo);
-
-//
-// ui_spPostgame.c
-//
-void UI_SPPostgameMenu_Cache(void);
-void UI_SPPostgameMenu_f(void);
-
-//
-// ui_spSkill.c
-//
-void UI_SPSkillMenu(const char *arenaInfo);
-void UI_SPSkillMenu_Cache(void);
-
-//
 // ui_syscalls.c
 //
 void trap_Print(const char *string);
@@ -1006,18 +962,6 @@ extern void UI_TeamOrdersMenu_f(void);
 extern void UI_TeamOrdersMenu_Cache(void);
 
 //
-// ui_loadconfig.c
-//
-void UI_LoadConfig_Cache(void);
-void UI_LoadConfigMenu(void);
-
-//
-// ui_saveconfig.c
-//
-void UI_SaveConfigMenu_Cache(void);
-void UI_SaveConfigMenu(void);
-
-//
 // ui_display.c
 //
 void UI_DisplayOptionsMenu_Cache(void);
@@ -1074,24 +1018,6 @@ void UI_SPUnlock_f(void);
 void UI_SPUnlockMedals_f(void);
 
 void UI_InitGameinfo(void);
-
-//
-// ui_login.c
-//
-void Login_Cache(void);
-void UI_LoginMenu(void);
-
-//
-// ui_signup.c
-//
-void Signup_Cache(void);
-void UI_SignupMenu(void);
-
-//
-// ui_rankstatus.c
-//
-void RankStatus_Cache(void);
-void UI_RankStatusMenu(void);
 
 // new ui
 

@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "g_local.h"
-#include "wopg_sphandling.h"
 
 level_locals_t level;
 
@@ -500,8 +499,6 @@ void G_InitGame(int levelTime, int randomSeed, int restart) {
 		BotAILoadMap(restart);
 		G_LoadBots();
 	}
-
-	wopSP_initGame();
 
 	if (strlen(nextmapBackUp.string) > 0) {
 		trap_Cvar_Set("nextmap", nextmapBackUp.string);
@@ -1156,8 +1153,6 @@ void BeginIntermission(void) {
 
 	// send the current scoring to all clients
 	SendScoreboardMessageToAllClients();
-
-	wopSP_OnIntermission();
 }
 
 /*
@@ -1176,24 +1171,20 @@ void ExitLevel(void) {
 	// bot interbreeding
 	BotInterbreedEndMatch();
 
-	if (wopSP_OnExitLevel()) {
-		; // the exitLevl stuff was handled by singleplayer ...
-	} else {
-		// if we are running a tournement map, kick the loser to spectator status,
-		// which will automatically grab the next spectator and restart
-		if (g_gametype.integer == GT_TOURNAMENT) {
-			if (!level.restarted) {
-				RemoveTournamentLoser();
-				trap_SendConsoleCommand(EXEC_APPEND, "map_restart 0\n");
-				level.restarted = qtrue;
-				level.changemap = NULL;
-				level.intermissiontime = 0;
-			}
-			return;
+	// if we are running a tournement map, kick the loser to spectator status,
+	// which will automatically grab the next spectator and restart
+	if (g_gametype.integer == GT_TOURNAMENT) {
+		if (!level.restarted) {
+			RemoveTournamentLoser();
+			trap_SendConsoleCommand(EXEC_APPEND, "map_restart 0\n");
+			level.restarted = qtrue;
+			level.changemap = NULL;
+			level.intermissiontime = 0;
 		}
-
-		trap_SendConsoleCommand(EXEC_APPEND, "vstr nextmap\n");
+		return;
 	}
+
+	trap_SendConsoleCommand(EXEC_APPEND, "vstr nextmap\n");
 
 	level.changemap = NULL;
 	level.intermissiontime = 0;

@@ -143,10 +143,6 @@ void InGame_Event(void *ptr, int notification) {
 		UI_VoiceIngame();
 		break;
 
-		/*	case ID_TEAMORDERS:
-				UI_TeamOrdersMenu();
-				break;
-		*/
 	case ID_CALLVOTE:
 		UI_CallVoteMenu();
 		break;

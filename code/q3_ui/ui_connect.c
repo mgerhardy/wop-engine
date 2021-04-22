@@ -19,11 +19,8 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
-#include "ui_local.h"
-#include "../game/wopg_sphandling.h"
 
-#include "../game/wopg_spstoryfiles.h"
+#include "ui_local.h"
 
 /*
 ===============================================================================
@@ -89,7 +86,7 @@ static void UI_DisplayDownloadInfo(const char *downloadName) {
 	fprintf( stderr, "\n\n-----------------------------------------------\n");
 	fprintf( stderr, "DB: downloadSize:  %16d\n", downloadSize );
 	fprintf( stderr, "DB: downloadCount: %16d\n", downloadCount );
-	fprintf( stderr, "DB: downloadTime:  %16d\n", downloadTime );  
+	fprintf( stderr, "DB: downloadTime:  %16d\n", downloadTime );
   	fprintf( stderr, "DB: UI realtime:   %16d\n", uis.realtime );	// bk
 	fprintf( stderr, "DB: UI frametime:  %16d\n", uis.frametime );	// bk
 #endif
@@ -189,72 +186,18 @@ void UI_DrawConnectScreen(qboolean overlay) {
 
 	Menu_Cache();
 
-	if (wop_specialSPLoadingScreen.integer) {
-		static int tmp = 0;
-
-		trap_Cvar_VariableStringBuffer(WOPSP_STORY_CVAR, info, sizeof(info));
-		if (info[0]) {
-			char seID[MAX_INFO_VALUE];
-			trap_Cvar_VariableStringBuffer(WOPSP_SELEMENT_CVAR, seID, sizeof(seID));
-
-			if (!wopSP_openStory(info)) {
-				wop_StoryElement_t tmpE;
-				wopSP_findStoryElement(seID, &tmpE);
-
-				if (wopSP_validSE(&tmpE) && *tmpE.intro) {
-					if (!Q_stricmpn("picture:", tmpE.intro, 8))
-						Q_strncpyz(info, tmpE.intro + 8, sizeof(info));
-					else
-						info[0] = '\0';
-				} else
-					info[0] = '\0';
-			} else
-				info[0] = '\0';
-
-			if (info[0]) {
-				UI_FillRect(0, 0, 640, 480, colorBlack);
-				//				UI_FillRect(10*tmp,0,20,20,colorWhite);
-				UI_DrawNamedPic(0, 0, 640, 480, info);
-				switch ((tmp >> 1) % 3) {
-				case 0:
-					UI_DrawStringNS(500, 440, "Loading .", UI_LEFT, 20, colorRed);
-					break;
-				case 1:
-					UI_DrawStringNS(500, 440, "Loading ..", UI_LEFT, 20, colorRed);
-					break;
-				case 2:
-				default:
-					UI_DrawStringNS(500, 440, "Loading ...", UI_LEFT, 20, colorRed);
-					break;
-				}
-			} else { // TODO: if we don't have a comic show some special loading screen (padman in the "teleporting"
-					 // tunnel or something like that)
-				/*				UI_FillRect(0,0,640,480,colorCyan);
-								UI_FillRect(10*tmp,0,20,20,colorBlack);
-
-								UI_DrawStringNS(100,100,va("storyelement: %s",info),0,16,colorMagenta);
-				*/
-			}
-			++tmp;
-
-			return;
-		}
+	if (overlay) {
+		return; // double over lay O_o
 	}
+	// draw the dialog background
+	UI_SetColor(color_white);
 
-	if (!overlay) {
-		// draw the dialog background
-		UI_SetColor(color_white);
-
-		// UI_DrawHandlePic( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.connectingBG );
-		// stretch it like in cgame ...
-		if (*downloadName)
-			trap_R_DrawStretchPic(0, 0, uis.glconfig.vidWidth, uis.glconfig.vidHeight, 0, 0, 1, 1,
-								  uis.pad_simpleMenuBg);
-		else
-			trap_R_DrawStretchPic(0, 0, uis.glconfig.vidWidth, uis.glconfig.vidHeight, 0, 0, 1, 1, uis.connectingBG);
-	} else {
-		return; // doppelt over lay O_o
-	}
+	// UI_DrawHandlePic( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.connectingBG );
+	// stretch it like in cgame ...
+	if (*downloadName)
+		trap_R_DrawStretchPic(0, 0, uis.glconfig.vidWidth, uis.glconfig.vidHeight, 0, 0, 1, 1, uis.pad_simpleMenuBg);
+	else
+		trap_R_DrawStretchPic(0, 0, uis.glconfig.vidWidth, uis.glconfig.vidHeight, 0, 0, 1, 1, uis.connectingBG);
 
 	// see what information we should display
 	trap_GetClientState(&cstate);
@@ -267,8 +210,6 @@ void UI_DrawConnectScreen(qboolean overlay) {
 
 	UI_DrawProportionalString(320, 64, va("Connecting to %s", cstate.servername),
 							  UI_CENTER | UI_SMALLFONT | UI_DROPSHADOW, menu_text_color);
-	// UI_DrawProportionalString( 320, 96, "Press Esc to abort", UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, menu_text_color
-	// );
 
 	// display global MOTD at bottom
 	UI_DrawProportionalString(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 32, Info_ValueForKey(cstate.updateInfoString, "motd"),
@@ -295,7 +236,7 @@ void UI_DrawConnectScreen(qboolean overlay) {
 		Field_Clear( &passwordField.field );
 		passwordField.width = 256;
 		passwordField.field.widthInChars = 16;
-		Q_strncpyz( passwordField.field.buffer, Cvar_VariableString("password"), 
+		Q_strncpyz( passwordField.field.buffer, Cvar_VariableString("password"),
 			sizeof(passwordField.field.buffer) );
 
 		Menu_AddItem( &s_ingame_menu, ( void * ) &s_customize_player_action );
@@ -324,9 +265,7 @@ void UI_DrawConnectScreen(qboolean overlay) {
 		s = "Awaiting gamestate...";
 		break;
 	case CA_LOADING:
-		return;
 	case CA_PRIMED:
-		return;
 	default:
 		return;
 	}

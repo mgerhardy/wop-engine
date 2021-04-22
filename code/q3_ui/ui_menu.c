@@ -109,15 +109,6 @@ void Main_MenuEvent(void *ptr, int event) {
 
 	switch (((menucommon_s *)ptr)->id) {
 	case ID_SINGLEPLAYER:
-		//(original)		UI_SPLevelMenu();
-		//#ifdef WOPSP_TEST
-		//		WoPSPMenu_Init();
-		/*
-		#else
-				Q_strncpyz(s_main.msg,"SinglePlayer hasn't been implemented yet!",MAX_MSGLENGHT);
-				s_main.msgtime=uis.realtime;
-		#endif
-		*/
 		UI_StartServerMenu(qtrue);
 		break;
 
@@ -132,12 +123,6 @@ void Main_MenuEvent(void *ptr, int event) {
 	case ID_DEMOS:
 		UI_DemosMenu();
 		break;
-
-		/*(orignal)
-			case ID_CINEMATICS:
-				UI_CinematicsMenu();
-				break;
-		*/
 
 	case ID_MODS:
 		UI_ModsMenu();

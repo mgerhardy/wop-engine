@@ -114,16 +114,6 @@ vmCvar_t ui_ctf_friendly;
 
 vmCvar_t ui_arenasFile;
 vmCvar_t ui_botsFile;
-vmCvar_t ui_spScores1;
-vmCvar_t ui_spScores2;
-vmCvar_t ui_spScores3;
-vmCvar_t ui_spScores4;
-vmCvar_t ui_spScores5;
-vmCvar_t ui_spAwards;
-vmCvar_t ui_spVideos;
-vmCvar_t ui_spSkill;
-
-vmCvar_t ui_spSelection;
 
 vmCvar_t ui_browserMaster;
 vmCvar_t ui_browserGameType;
@@ -156,20 +146,12 @@ vmCvar_t ui_server14;
 vmCvar_t ui_server15;
 vmCvar_t ui_server16;
 
-vmCvar_t ui_cdkeychecked;
-// spray anfang
-// vmCvar_t	logolist;
-// spray ende
-// lens anfang
-// vmCvar_t	lensflarelist;
-// lens ende
 vmCvar_t spraycolor;
 vmCvar_t syc_logo;
 vmCvar_t s_wop_restarted;
 vmCvar_t con_notifytime;
 vmCvar_t wop_AutoswitchSongByNextMap;
 vmCvar_t wop_AutoBindUnusedKeys;
-vmCvar_t wop_specialSPLoadingScreen;
 
 // bk001129 - made static to avoid aliasing.
 static cvarTable_t cvarTable[] = {{&ui_ffa_fraglimit, "ui_ffa_fraglimit", "20", CVAR_ARCHIVE},
@@ -188,16 +170,6 @@ static cvarTable_t cvarTable[] = {{&ui_ffa_fraglimit, "ui_ffa_fraglimit", "20", 
 
 								  {&ui_arenasFile, "g_arenasFile", "", CVAR_INIT | CVAR_ROM},
 								  {&ui_botsFile, "g_botsFile", "", CVAR_INIT | CVAR_ROM},
-								  {&ui_spScores1, "g_spScores1", "", CVAR_ARCHIVE},
-								  {&ui_spScores2, "g_spScores2", "", CVAR_ARCHIVE},
-								  {&ui_spScores3, "g_spScores3", "", CVAR_ARCHIVE},
-								  {&ui_spScores4, "g_spScores4", "", CVAR_ARCHIVE},
-								  {&ui_spScores5, "g_spScores5", "", CVAR_ARCHIVE},
-								  {&ui_spAwards, "g_spAwards", "", CVAR_ARCHIVE},
-								  {&ui_spVideos, "g_spVideos", "", CVAR_ARCHIVE},
-								  {&ui_spSkill, "g_spSkill", "2", CVAR_ARCHIVE | CVAR_LATCH},
-
-								  {&ui_spSelection, "ui_spSelection", "", CVAR_ROM},
 
 								  {&ui_browserMaster, "ui_browserMaster", "2", CVAR_ARCHIVE},
 								  {&ui_browserGameType, "ui_browserGameType", "0", CVAR_ARCHIVE},
@@ -229,22 +201,12 @@ static cvarTable_t cvarTable[] = {{&ui_ffa_fraglimit, "ui_ffa_fraglimit", "20", 
 								  {&ui_server14, "server14", "", CVAR_ARCHIVE},
 								  {&ui_server15, "server15", "", CVAR_ARCHIVE},
 								  {&ui_server16, "server16", "", CVAR_ARCHIVE},
-
-								  {&ui_cdkeychecked, "ui_cdkeychecked", "0", CVAR_ROM}
-								  // spray anfang
-								  //	,{ NULL, "logolist", "", CVAR_INIT|CVAR_ROM } // ohne verwaltungs-cvar -> kein
-								  //value limit spray ende lens anfang
-								  //	,{ NULL, "lensflarelist", "", CVAR_INIT|CVAR_ROM }
-								  // lens ende
-								  ,
 								  {&spraycolor, "syc_color", "0", CVAR_ARCHIVE | CVAR_USERINFO},
 								  {&syc_logo, "syc_logo", "", CVAR_ARCHIVE},
-								  {&s_wop_restarted, "s_wop_restarted", "0", CVAR_ROM | CVAR_TEMP} // CVAR_NORESTART
-								  ,
+								  {&s_wop_restarted, "s_wop_restarted", "0", CVAR_ROM | CVAR_TEMP}, // CVAR_NORESTART
 								  {&con_notifytime, "con_notifytime", "4", CVAR_ARCHIVE},
 								  {&wop_AutoswitchSongByNextMap, "wop_AutoswitchSongByNextMap", "0", CVAR_ARCHIVE},
-								  {&wop_AutoBindUnusedKeys, "wop_AutoBindUnusedKeys", "1", CVAR_ARCHIVE},
-								  {&wop_specialSPLoadingScreen, "wop_specialSPLoadingScreen", "1", CVAR_TEMP}};
+								  {&wop_AutoBindUnusedKeys, "wop_AutoBindUnusedKeys", "1", CVAR_ARCHIVE}};
 
 static int cvarTableSize = ARRAY_LEN(cvarTable);
 

@@ -26,7 +26,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	User interface building blocks and support functions.
 **********************************************************************/
 #include "ui_local.h"
-#include "../game/wopg_sphandling.h"
 
 uiStatic_t uis;
 qboolean m_entersound; // after a frame, so caching won't disrupt the sound
@@ -1126,7 +1125,6 @@ void UI_Cache_f(void) {
 	PlayerSettings_Cache();
 	Controls_Cache();
 	Demos_Cache();
-	UI_CinematicsMenu_Cache();
 	Preferences_Cache();
 	ServerInfo_Cache();
 	SpecifyServer_Cache();
@@ -1137,9 +1135,6 @@ void UI_Cache_f(void) {
 	UI_DisplayOptionsMenu_Cache();
 	UI_SoundOptionsMenu_Cache();
 	UI_NetworkOptionsMenu_Cache();
-	UI_SPLevelMenu_Cache();
-	UI_SPSkillMenu_Cache();
-	UI_SPPostgameMenu_Cache();
 	TeamMain_Cache();
 	UI_AddBots_Cache();
 	UI_RemoveBots_Cache();
@@ -1148,10 +1143,7 @@ void UI_Cache_f(void) {
 	SetupDefaultMenu_Cache();
 	UI_BigCredits_Cache();
 
-	//	UI_LoadConfig_Cache();
-	//	UI_SaveConfigMenu_Cache();
 	UI_BotSelectMenu_Cache();
-	UI_CDKeyMenu_Cache();
 	UI_ModsMenu_Cache();
 }
 
@@ -1171,50 +1163,11 @@ qboolean UI_ConsoleCommand(int realTime) {
 	// ensure minimum menu data is available
 	Menu_Cache();
 
-	// These should not be available, since they are defunctional!
-	/*
-		if ( Q_stricmp (cmd, "levelselect") == 0 ) {
-			UI_SPLevelMenu_f();
-			return qtrue;
-		}
-
-		if ( Q_stricmp (cmd, "postgame") == 0 ) {
-			UI_SPPostgameMenu_f();
-			return qtrue;
-		}
-
-		if ( Q_stricmp (cmd, "ui_cache") == 0 ) {
-			UI_Cache_f();
-			return qtrue;
-		}
-
-		if ( Q_stricmp (cmd, "ui_cinematics") == 0 ) {
-			UI_CinematicsMenu_f();
-			return qtrue;
-		}
-	*/
-
 	// this is still needed, but its ingame menu entry is disabled
 	if (Q_stricmp(cmd, "ui_teamOrders") == 0) {
 		UI_TeamOrdersMenu_f();
 		return qtrue;
 	}
-	/*
-		if ( Q_stricmp (cmd, "iamacheater") == 0 ) {
-			UI_SPUnlock_f();
-			return qtrue;
-		}
-
-		if ( Q_stricmp (cmd, "iamamonkey") == 0 ) {
-			UI_SPUnlockMedals_f();
-			return qtrue;
-		}
-
-		if ( Q_stricmp (cmd, "ui_cdkey") == 0 ) {
-			UI_CDKeyMenu_f();
-			return qtrue;
-		}
-	*/
 	if (Q_stricmp(cmd, "wop_music") == 0) {
 		MusicMenu_Open();
 		return qtrue;
@@ -1231,36 +1184,11 @@ qboolean UI_ConsoleCommand(int realTime) {
 		Music_TriggerRestart();
 		return qtrue;
 	}
-
 	if (Q_stricmp(cmd, "ui_help") == 0) {
 		UI_HelpMenu_f();
 		return qtrue;
 	}
 
-	// See note above
-	/*
-		if(Q_stricmp(cmd, "wop_mediaview")==0) {
-			int argc = trap_Argc();
-			if(argc==2 || argc==3) {
-				if(uis.menusp==0)
-					trap_Cvar_Set( "cl_paused", "1" );
-
-				if(argc==2)
-					LaunchMediaViewMenu(UI_Argv(1),NULL);
-				else {
-					char tmpExecOnClose[512];
-					trap_Argv( 2, tmpExecOnClose, sizeof(tmpExecOnClose) );
-					LaunchMediaViewMenu(UI_Argv(1),tmpExecOnClose);
-				}
-			}
-			else
-				Com_Printf("  usage: %s [mediaRef]\n",cmd);
-			return qtrue;
-		}
-
-		if(wopSP_cmdCheck(cmd))
-			return qtrue;
-	*/
 	return qfalse;
 }
 
@@ -1283,7 +1211,6 @@ void UI_Init(void) {
 	UI_RegisterCvars();
 
 	// not yet
-	//	WOP_LoadMenuText(UI_LOCALEFILE, qtrue);
 
 	SetDefaultBinds_onUnusedKeys();
 

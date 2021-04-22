@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 //
 #include "g_local.h"
-#include "wopg_sphandling.h"
 
 /*
 =======================================================================
@@ -102,10 +101,7 @@ void G_InitSessionData(gclient_t *client, char *userinfo) {
 
 	// initial team determination
 	if (g_gametype.integer >= GT_TEAM) {
-		if (wopSP_hasForceTeam()) {
-			sess->sessionTeam = wopSP_forceTeam();
-			BroadcastTeamChange(client, -1);
-		} else if (g_teamAutoJoin.integer) {
+		if (g_teamAutoJoin.integer) {
 			sess->sessionTeam = PickTeam(-1);
 			BroadcastTeamChange(client, -1);
 		} else {

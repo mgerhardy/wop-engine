@@ -513,7 +513,6 @@ static void ArenaServers_UpdateMenu(void) {
 	for (i = 0, j = 0; i < count; i++, servernodeptr++) {
 		tableptr = &g_arenaservers.table[j];
 		tableptr->servernode = servernodeptr;
-		buff = tableptr->buff;
 
 		// can only cull valid results
 		if (!g_emptyservers && !servernodeptr->numclients) {
