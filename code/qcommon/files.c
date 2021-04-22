@@ -2095,8 +2095,8 @@ Returns a uniqued list of files that match the given criteria
 from all search paths
 ===============
 */
-char **FS_ListFilteredFiles(const char *path, const char *extensions, char *filter, int *numfiles,
-							qboolean allowNonPureFilesOnDisk) {
+static char **FS_ListFilteredFiles(const char *path, const char *extensions, char *filter, int *numfiles,
+								   qboolean allowNonPureFilesOnDisk) {
 	int nfiles;
 	char **listCopy;
 	char *list[MAX_FOUND_FILES];
@@ -2130,17 +2130,21 @@ char **FS_ListFilteredFiles(const char *path, const char *extensions, char *filt
 
 	Q_strncpyz(extensionBuf, extensions, sizeof(extensionBuf));
 	char *ext = extensionBuf;
+	nfiles = 0;
+	FS_ReturnPath(path, zpath, &pathDepth);
+
 	for (;;) {
 		extension = ext;
-		char *next = Q_stristr(ext, ";");
-		if (next != NULL) {
-			*next = '\0';
-			ext = next + 1;
+		if (*ext != '\0') {
+			char *next = Q_stristr(ext, ";");
+			if (next != NULL) {
+				*next = '\0';
+				ext = next + 1;
+			} else {
+				ext = "";
+			}
 		}
-
 		extensionLength = strlen(extension);
-		nfiles = 0;
-		FS_ReturnPath(path, zpath, &pathDepth);
 
 		//
 		// search through the path, one element at a time, adding to list
@@ -2164,7 +2168,7 @@ char **FS_ListFilteredFiles(const char *path, const char *extensions, char *filt
 
 					// check for directory match
 					name = buildBuffer[i].name;
-					//
+
 					if (filter) {
 						// case insensitive
 						if (!Com_FilterPath(filter, name, qfalse))
@@ -2217,6 +2221,10 @@ char **FS_ListFilteredFiles(const char *path, const char *extensions, char *filt
 					Sys_FreeFileList(sysFiles);
 				}
 			}
+		}
+
+		if (*ext == '\0') {
+			break;
 		}
 	}
 	// return a copy of the list
@@ -3260,7 +3268,6 @@ static void FS_Startup(const char *gameName) {
 	Com_Printf("----------------------\n");
 	Com_Printf("%d files in pk3 files\n", fs_packFiles);
 }
-
 
 /*
 =====================
