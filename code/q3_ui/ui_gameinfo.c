@@ -839,9 +839,9 @@ void UI_SearchSpraylogos( void ) {
 		nameLen = strlen( namePtr );
 		
 		// ignore anything but jpg and tga
-		if( !nameLen 
-			|| !ext 
-			|| ( Q_stricmp(".jpg", Q_strlwr(ext)) != 0 && Q_stricmp(".tga", Q_strlwr(ext)) != 0 )
+		if( !nameLen
+			|| !ext
+			|| ( Q_stricmp(".jpg", Q_strlwr(ext)) != 0 && Q_stricmp(".tga", Q_strlwr(ext)) != 0 && Q_stricmp(".png", Q_strlwr(ext)) != 0 )
 			)
 			continue;
 

@@ -4642,7 +4642,7 @@ static qboolean Character_Parse(char **p) {
       }
     
       uiInfo.characterList[uiInfo.characterCount].headImage = -1;
-			uiInfo.characterList[uiInfo.characterCount].imageName = String_Alloc(va("models/players/heads/%s/icon_default.tga", uiInfo.characterList[uiInfo.characterCount].name));
+			uiInfo.characterList[uiInfo.characterCount].imageName = String_Alloc(va("models/players/heads/%s/icon_default", uiInfo.characterList[uiInfo.characterCount].name));
 
 	  if (tempStr && (!Q_stricmp(tempStr, "female"))) {
         uiInfo.characterList[uiInfo.characterCount].base = String_Alloc(va("Janet"));
@@ -5018,6 +5018,7 @@ static void UI_BuildQ3Model_List( void )
 	int		j, k, dirty;
 	int		dirlen;
 	int		filelen;
+	int		tgaLength = 0;
 
 	uiInfo.q3HeadCount = 0;
 
@@ -5027,14 +5028,17 @@ static void UI_BuildQ3Model_List( void )
 	for (i=0; i<numdirs && uiInfo.q3HeadCount < MAX_PLAYERMODELS; i++,dirptr+=dirlen+1)
 	{
 		dirlen = strlen(dirptr);
-		
+
 		if (dirlen && dirptr[dirlen-1]=='/') dirptr[dirlen-1]='\0';
 
 		if (!strcmp(dirptr,".") || !strcmp(dirptr,".."))
 			continue;
-			
+
 		// iterate all skin files in directory
-		numfiles = trap_FS_GetFileList( va("models/players/%s",dirptr), "tga", filelist, 2048 );
+		numfiles = 0;
+		numfiles += trap_FS_GetFileList( va("models/players/%s",dirptr), "tga", filelist, 2048 );
+		tgaLength = strlen(filelist);
+		numfiles += trap_FS_GetFileList( va("models/wop_players/%s",dirptr), "png", filelist + strlen(filelist), 2048 - tgaLength );
 		fileptr  = filelist;
 		for (j=0; j<numfiles && uiInfo.q3HeadCount < MAX_PLAYERMODELS;j++,fileptr+=filelen+1)
 		{

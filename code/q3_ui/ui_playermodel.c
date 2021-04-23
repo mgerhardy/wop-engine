@@ -402,6 +402,7 @@ static void PlayerModel_BuildList( void )
 	int		j;
 	int		dirlen;
 	int		filelen;
+	int		tgaLength;
 
 	s_playermodel.modelpage = 0;
 	s_playermodel.nummodels = 0;
@@ -412,14 +413,17 @@ static void PlayerModel_BuildList( void )
 	for (i=0; i<numdirs && s_playermodel.nummodels < MAX_PLAYERMODELS; i++,dirptr+=dirlen+1)
 	{
 		dirlen = strlen(dirptr);
-		
+
 		if (dirlen && dirptr[dirlen-1]=='/') dirptr[dirlen-1]='\0';
 
 		if (!strcmp(dirptr,".") || !strcmp(dirptr,".."))
 			continue;
-			
+
 		// iterate all skin files in directory
-		numfiles = trap_FS_GetFileList( va("models/wop_players/%s",dirptr), "tga", filelist, 2048 );
+		numfiles = 0;
+		numfiles += trap_FS_GetFileList( va("models/wop_players/%s",dirptr), "tga", filelist, 2048 );
+		tgaLength = strlen(filelist);
+		numfiles += trap_FS_GetFileList( va("models/wop_players/%s",dirptr), "png", filelist + strlen(filelist), 2048 - tgaLength );
 		fileptr  = filelist;
 		for (j=0; j<numfiles && s_playermodel.nummodels < MAX_PLAYERMODELS;j++,fileptr+=filelen+1)
 		{
