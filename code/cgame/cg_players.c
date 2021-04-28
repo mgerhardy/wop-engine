@@ -220,7 +220,7 @@ static qboolean	CG_ParseAnimationFile( const char *filename, clientInfo_t *ci ) 
 
 		token = COM_Parse( &text_p );
 		if ( !*token ) {
-			if( i >= TORSO_GETFLAG && i <= TORSO_NEGATIVE ) {
+			if( i >= TORSO_SPRAYATTACK && i <= TORSO_NEGATIVE ) {
 				animations[i].firstFrame = animations[TORSO_GESTURE].firstFrame;
 				animations[i].frameLerp = animations[TORSO_GESTURE].frameLerp;
 				animations[i].initialLerp = animations[TORSO_GESTURE].initialLerp;
