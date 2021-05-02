@@ -303,7 +303,6 @@ typedef struct {
 extern void Menu_Cache(void);
 extern void Menu_Focus(menucommon_s *m);
 extern void Menu_AddItem(menuframework_s *menu, void *item);
-extern void Menu_AdjustCursor(menuframework_s *menu, int dir);
 extern void Menu_Draw(menuframework_s *menu);
 extern void *Menu_ItemAtCursor(menuframework_s *m);
 extern sfxHandle_t Menu_ActivateItem(menuframework_s *s, menucommon_s *item);
@@ -312,7 +311,6 @@ extern void Menu_SetCursorToItem(menuframework_s *m, void *ptr);
 extern sfxHandle_t Menu_DefaultKey(menuframework_s *s, int key);
 extern void Bitmap_Init(menubitmap_s *b);
 extern void Bitmap_Draw(menubitmap_s *b);
-extern void ScrollList_Draw(menulist_s *l);
 extern sfxHandle_t ScrollList_Key(menulist_s *l, int key);
 
 extern sfxHandle_t menu_move_sound;
