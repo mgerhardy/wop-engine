@@ -4,6 +4,7 @@ set(SRCS
 	sv_ccmds.c
 	sv_client.c
 	sv_game.c
+	sv_http.c
 	sv_init.c
 	sv_main.c
 	sv_net_chan.c
@@ -68,6 +69,9 @@ endif()
 target_link_libraries(${PROJECT_NAME} ${LIBS})
 target_include_directories(${PROJECT_NAME} PRIVATE ../qcommon)
 if (USE_VOIP)
-	list(APPEND SERVER_DEFINES -DUSE_VOIP)
+	list(APPEND SERVER_DEFINES USE_VOIP)
+endif()
+if (USE_HTTP_SERVER)
+	list(APPEND SERVER_DEFINES USE_HTTP_SERVER)
 endif()
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${SERVER_DEFINES})

@@ -22,6 +22,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "server.h"
 
+#ifdef USE_HTTP_SERVER
+extern cvar_t *sv_httpServerPort;
+extern qboolean SV_HTTPServerInit(void);
+extern void SV_HTTPServerShutdown(void);
+#endif
+
 /*
 ===============
 SV_SendConfigstring
@@ -634,6 +640,9 @@ void SV_Init(void) {
 	Cvar_CheckRange(sv_voip, 0, 1, qtrue);
 	sv_voipProtocol = Cvar_Get("sv_voipProtocol", sv_voip->integer ? "opus" : "", CVAR_SYSTEMINFO | CVAR_ROM);
 #endif
+#ifdef USE_HTTP_SERVER
+	sv_httpServerPort = Cvar_Get("sv_httpServerPort", "8080", CVAR_SYSTEMINFO | CVAR_INIT | CVAR_ARCHIVE);
+#endif
 	Cvar_Get("sv_paks", "", CVAR_SYSTEMINFO | CVAR_ROM);
 	Cvar_Get("sv_pakNames", "", CVAR_SYSTEMINFO | CVAR_ROM);
 	Cvar_Get("sv_referencedPaks", "", CVAR_SYSTEMINFO | CVAR_ROM);
@@ -670,6 +679,12 @@ void SV_Init(void) {
 
 	// Load saved bans
 	Cbuf_AddText("rehashbans\n");
+
+#ifdef USE_HTTP_SERVER
+	if (!SV_HTTPServerInit()) {
+		Com_Printf("Failed to init http server\n");
+	}
+#endif
 }
 
 /*
@@ -750,4 +765,8 @@ void SV_Shutdown(const char *finalmsg) {
 	// disconnect any local clients
 	if (sv_killserver->integer != 2)
 		CL_Disconnect(qfalse);
+
+#ifdef USE_HTTP_SERVER
+	SV_HTTPServerShutdown();
+#endif
 }
